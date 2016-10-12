@@ -26,7 +26,8 @@ export const CheckBox = ({
 
     const checkBoxContainerProps = {
         className: prefix(CLASS_NAMES.SELECTION_MODEL.CHECKBOX_CONTAINER,
-            type === 'header' && selectionModelConfig.mode === SELECTION_MODES.checkboxSingle
+            type === 'header'
+                && selectionModelConfig.mode === SELECTION_MODES.checkboxSingle
                 ? 'hidden'
                 : ''
         )
@@ -133,7 +134,9 @@ CheckBox.propTypes = {
     type: PropTypes.string
 };
 
-CheckBox.defaultProps = {};
+CheckBox.defaultProps = {
+    selectionModelConfig: {}
+};
 
 function mapStateToProps(state, props) {
     return {
