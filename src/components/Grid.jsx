@@ -1,8 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { List } from 'immutable';
-import { map } from 'react-immutable-proptypes';
-
 import TableContainer from './layout/TableContainer';
 import FixedHeader from './layout/FixedHeader';
 import PagerToolbar from './plugins/pager/Pager';
@@ -68,9 +65,9 @@ class Grid extends Component {
             showTreeRootNode
         } = this.props;
 
-        const columns = columnState
-            ? columnState.get('columns')
-            : new List();
+        const columns = columnState && columnState.columns
+            ? columnState.columns
+            : [];
 
         const editorComponent = this.editor.getComponent(
             plugins,
@@ -248,7 +245,7 @@ class Grid extends Component {
 
     static propTypes = {
         classNames: array,
-        columnState: map,
+        columnState: object,
         columns: arrayOf(object).isRequired,
         data: arrayOf(object),
         dataSource: any,

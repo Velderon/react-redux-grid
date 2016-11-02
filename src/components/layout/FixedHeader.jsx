@@ -1,5 +1,4 @@
 import React, { PropTypes, Component } from 'react';
-import { list } from 'react-immutable-proptypes';
 import ReactDOM from 'react-dom';
 
 import { Column } from './header/Column';
@@ -45,7 +44,7 @@ class FixedHeader extends Component {
             width
         } = this.state;
 
-        const visibleColumns = columns.filter((col) => !col.get('hidden'));
+        const visibleColumns = columns.filter((col) => !col.hidden);
         const headers = visibleColumns.map((col, i) => {
 
             const colProps = {
@@ -65,7 +64,7 @@ class FixedHeader extends Component {
                 // since hidden columns arent visible
                 // but still exist in the column array
                 actualIndex: columns
-                    .findIndex(c => col.get('dataIndex') === c.get('dataIndex'))
+                    .findIndex(c => col.dataIndex === c.dataIndex)
             };
 
             return (
@@ -233,7 +232,7 @@ class FixedHeader extends Component {
     static propTypes = {
         columnManager: object.isRequired,
         columnState: object,
-        columns: list,
+        columns: arrayOf(object).isRequired,
         dataSource: object,
         menuState: object,
         pager: object,
