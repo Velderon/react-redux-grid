@@ -8,9 +8,9 @@ export const Text = ({
     actualIndex, col, columnManager, dragAndDropManager, sortHandle
 }) => {
 
-    const innerHTML = col.name;
-    const draggable = col.moveable !== undefined
-        ? col.moveable
+    const innerHTML = col.get('name');
+    const draggable = col.get('moveable') !== undefined
+        ? col.get('moveable')
         : columnManager.config.moveable;
 
     const spanProps = dragAndDropManager.initDragable({

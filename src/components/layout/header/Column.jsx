@@ -34,7 +34,7 @@ export const Column = ({
     stateful
 }) => {
 
-    if (col.hidden) {
+    if (col.get('hidden')) {
         return false;
     }
 
@@ -42,25 +42,25 @@ export const Column = ({
 
     const sortable = isSortable(col, columnManager);
 
-    const visibleColumns = columns.filter(c => !c.hidden);
+    const visibleColumns = columns.filter(c => !c.get('hidden'));
 
-    const sortedColumn = columns.find(c => c.sortDirection);
+    const sortedColumn = columns.find(c => c.get('sortDirection'));
 
     const shouldShowCaret = sortedColumn
-        ? sortedColumn.dataIndex === col.dataIndex
-        : col.defaultSortDirection;
+        ? sortedColumn.dataIndex === col.get('dataIndex')
+        : col.get('defaultSortDirection');
 
-    const direction = col.sortDirection
-        || col.defaultSortDirection
+    const direction = col.get('sortDirection')
+        || col.get('defaultSortDirection')
         || SORT_DIRECTIONS.ASCEND;
 
     const sortHandleCls = shouldShowCaret
         ? prefix(CLASS_NAMES.SORT_HANDLE_VISIBLE) : '';
 
-    const key = keyGenerator(col.name, 'grid-column');
+    const key = keyGenerator(col.get('name'), 'grid-column');
 
     const nextColumnKey = visibleColumns && visibleColumns[index + 1]
-        ? keyGenerator(visibleColumns[index + 1].name, 'grid-column') : null;
+        ? keyGenerator(visibleColumns[index + 1].get('name'), 'grid-column') : null;
 
     const handleDrag = scope.handleDrag.bind(
         scope,
@@ -90,8 +90,8 @@ export const Column = ({
     const dragHandle = isResizable
         ? <DragHandle { ...{ col, dragAndDropManager, handleDrag } } /> : null;
 
-    let headerClass = col.className
-        ? `${col.className} ${isResizable ? prefix('resizable') : ''}`
+    let headerClass = col.get('className')
+        ? `${col.get('className')} ${isResizable ? prefix('resizable') : ''}`
         : `${isResizable ? prefix('resizable') : ''}`;
 
     if (sortHandleCls) {
@@ -130,6 +130,7 @@ export const Column = ({
         style: {
             width: getWidth(
                 col,
+                visibleColumns,
                 key,
                 columns,
                 columnManager.config.defaultColumnWidth,
@@ -295,8 +296,8 @@ export const handleColumnClick = ({
 
 export const isSortable = (col, columnManager) => {
 
-    if (col.sortable !== undefined) {
-        return col.sortable;
+    if (col.get('sortable') !== undefined) {
+        return col.get('sortable');
     }
 
     else if (columnManager.config.sortable.enabled !== undefined) {
@@ -307,19 +308,21 @@ export const isSortable = (col, columnManager) => {
 
 };
 
-export const getWidth = (col, key, columns, defaultColumnWidth) => {
+export const getWidth = (
+    col, visibleColumns, key, columns, defaultColumnWidth
+) => {
 
-    const visibleColumns = columns.filter((_col) => !_col.hidden);
     const lastColumn = visibleColumns[visibleColumns.length - 1];
-    const isLastColumn = lastColumn && lastColumn.name === col.name;
+    const isLastColumn = lastColumn
+        && lastColumn.get('name') === col.get('name');
     const totalWidth = columns.reduce((a, _col) => {
-        if (_col.hidden) {
+        if (_col.get('hidden')) {
             return a + 0;
         }
-        return a + parseFloat(_col.width || defaultColumnWidth);
+        return a + parseFloat(_col.get('width') || defaultColumnWidth);
     }, 0);
 
-    let width = col.width || defaultColumnWidth;
+    let width = col.get('width') || defaultColumnWidth;
 
     if (isLastColumn
             && totalWidth !== 0
@@ -333,7 +336,7 @@ export const getWidth = (col, key, columns, defaultColumnWidth) => {
 
 export const isColumnResizable = (col, columnManager) => {
 
-    if (col.resizable !== undefined) {
+    if (col.get('resizable') !== undefined) {
         return col.resizable;
     }
 
