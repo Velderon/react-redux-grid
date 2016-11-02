@@ -42,6 +42,8 @@ export function shouldPagerUpdate(nextProps, nextState) {
 
 export function shouldHeaderUpdate(nextProps, nextState) {
     let result = true;
+    // to do, stop this
+    return true;
 
     const menuState = state =>
         state && state['header-row'];

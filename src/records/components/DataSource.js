@@ -10,6 +10,7 @@ const DataSource = Record({
     total: 0,
     treeData: Map(),
     currentRecords: List(),
+    isEditing: false,
     lastUpdate: 0
 });
 
