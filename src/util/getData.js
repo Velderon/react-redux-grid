@@ -2,7 +2,7 @@ import { List, fromJS } from 'immutable';
 import { camelize } from './camelize';
 
 export const getData = (
-    rowData = {}, columns = {}, colIndex = 0, editorValues = {}
+    row = {}, columns = {}, colIndex = 0, editorValues = {}
 ) => {
 
     const column = columns[colIndex];
@@ -22,14 +22,15 @@ export const getData = (
     }
 
     if (typeof dataIndex === 'string') {
-        return rowData
-            && rowData[dataIndex] !== undefined
-            ? rowData[dataIndex]
+        return row
+            && row.get
+            && row.get(dataIndex) !== undefined
+            ? row.get(dataIndex)
             : null;
     }
 
     else if (Array.isArray(dataIndex)) {
-        return getValueFromDataIndexArr(rowData, dataIndex);
+        return getValueFromDataIndexArr(row, dataIndex);
     }
 
 };
@@ -61,7 +62,7 @@ export const setKeysInData = (data) => {
 export const getRowKey = (columns, rowValues, suffix) => {
 
     const uniqueCol = columns.filter(col => col.createKeyFrom);
-    let val = rowValues._key;
+    let val = rowValues.get('_key');
 
     if (uniqueCol.length > 1) {
         throw new Error('Only one column can declare createKeyFrom');
@@ -69,9 +70,9 @@ export const getRowKey = (columns, rowValues, suffix) => {
 
     if (uniqueCol.length > 0) {
         const dataIndex = nameFromDataIndex(uniqueCol[0]);
-        val = rowValues && rowValues[dataIndex]
-            ? rowValues[dataIndex]
-            : rowValues._key;
+        val = rowValues && rowValues.get(dataIndex)
+            ? rowValues.get(dataIndex)
+            : rowValues.get('_key');
     }
 
     if (suffix) {
@@ -81,14 +82,14 @@ export const getRowKey = (columns, rowValues, suffix) => {
     return val;
 };
 
-export const setDataAtDataIndex = (rowData = {}, dataIndex, val) => {
+export const setDataAtDataIndex = (row = {}, dataIndex, val) => {
 
     if (typeof dataIndex === 'string') {
-        rowData[dataIndex] = val;
-        return rowData;
+        row[dataIndex] = val;
+        return row;
     }
 
-    let temp = rowData;
+    let temp = row;
 
     for (let i = 0; i < dataIndex.length - 1; i++) {
         temp = temp[dataIndex[i]];
@@ -100,25 +101,26 @@ export const setDataAtDataIndex = (rowData = {}, dataIndex, val) => {
 
     temp[dataIndex[dataIndex.length - 1]] = val;
 
-    return rowData;
+    return row;
 };
 
-export const getValueFromDataIndexArr = (rowData, dataIndex) => {
-    let temp = rowData;
+export const getValueFromDataIndexArr = (row, dataIndex) => {
+    // let temp = row;
 
-    for (let i = 0; i < dataIndex.length; i++) {
+    // for (let i = 0; i < dataIndex.length; i++) {
 
-        if (!temp[dataIndex[i]]) {
-            // preferring silent failure on get
-            // but we throw an error on the update
-            // if the key path is invalid
-            return '';
-        }
+    //     if (!temp[dataIndex[i]]) {
+    //         // preferring silent failure on get
+    //         // but we throw an error on the update
+    //         // if the key path is invalid
+    //         return '';
+    //     }
 
-        temp = temp[dataIndex[i]];
-    }
+    //     temp = temp[dataIndex[i]];
+    // }
 
-    return temp;
+    // return temp;
+    return row.getIn(dataIndex);
 };
 
 export const nameFromDataIndex = (column) => {

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-set-state */
 import React, { Component, PropTypes } from 'react';
+import { List } from 'immutable';
 import ReactDOM from 'react-dom';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -69,9 +70,7 @@ export class TableRow extends Component {
             plugins,
             viewableIndex,
             viewableCount,
-            BUFFER_MULTIPLIER,
-            stateKey,
-            store
+            BUFFER_MULTIPLIER
         );
 
         const rowComponents = getRows(
@@ -103,8 +102,8 @@ export class TableRow extends Component {
             BUFFER_MULTIPLIER
         );
 
-        const rowInsert = Array.isArray(rowComponents)
-            && rowComponents.length > 0
+        const rowInsert = List.isList(rowComponents)
+            && rowComponents.count() > 0
             ? rowComponents
             : <PlaceHolder { ...{ emptyDataMessage } } />;
 
@@ -302,9 +301,7 @@ export const getRowSelection = (
     plugins,
     viewableIndex,
     viewableCount,
-    bufferMultiplier,
-    stateKey,
-    store
+    bufferMultiplier
 ) => {
 
     if (!dataSource) {
@@ -357,7 +354,7 @@ export const getRows = (
     bufferMultiplier
 ) => {
 
-    const rowArray = Array.isArray(rows)
+    const rowArray = List.isList(rows)
             ? rows.map((row, i) => getRowComponents(
                 columns,
                 columnManager,
@@ -428,23 +425,23 @@ export const getRows = (
 };
 
 export const getTreeData = row => ({
-    depth: row._depth,
-    parentId: row._parentId,
-    id: row._id,
-    index: row._index,
-    flatIndex: row._flatIndex,
-    leaf: row._leaf,
-    hasChildren: row._hasChildren,
-    isExpanded: row._isExpanded,
-    isLastChild: row._isLastChild,
-    isFirstChild: row._isFirstChild,
-    previousSiblingId: row._previousSiblingId,
-    previousSiblingTotalChildren: row._previousSiblingTotalChilden,
-    previousSiblingChildIds: row._previousSiblingChildIds,
-    parentTotalChildren: row._parentTotalChildren,
-    parentIndex: row._parentIndex,
-    indexPath: row._indexPath,
-    path: row._path
+    depth: row.get('_depth'),
+    parentId: row.get('_parentId'),
+    id: row.get('_id'),
+    index: row.get('_index'),
+    flatIndex: row.get('_flatIndex'),
+    leaf: row.get('_leaf'),
+    hasChildren: row.get('_hasChildren'),
+    isExpanded: row.get('_isExpanded'),
+    isLastChild: row.get('_isLastChild'),
+    isFirstChild: row.get('_isFirstChild'),
+    previousSiblingId: row.get('_previousSiblingId'),
+    previousSiblingTotalChildren: row.get('_previousSiblingTotalChilden'),
+    previousSiblingChildIds: row.get('_previousSiblingChildIds'),
+    parentTotalChildren: row.get('_parentTotalChildren'),
+    parentIndex: row.get('_parentIndex'),
+    indexPath: row.get('_indexPath'),
+    path: row.get('_path')
 });
 
 export default DragDropContext(HTML5Backend)(TableRow);
