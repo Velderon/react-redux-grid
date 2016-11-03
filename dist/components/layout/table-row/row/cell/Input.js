@@ -26,14 +26,15 @@ var Input = exports.Input = function Input(_ref) {
 
 
     var colName = (0, _getData.nameFromDataIndex)(column);
+    var editorData = editorState.get(rowId);
 
-    var overrides = editorState && editorState[rowId] && editorState[rowId].values && editorState[rowId].overrides[colName] !== undefined ? editorState[rowId].overrides[colName] : {};
+    var overrides = editorData && editorData.values && editorData.overrides[colName] !== undefined ? editorData.overrides[colName] : {};
 
     var placeholder = column && column.placeholder ? column.placeholder : false;
 
-    var value = editorState && editorState[rowId] && editorState[rowId].values && editorState[rowId].values[colName] !== undefined ? editorState[rowId].values[colName] : cellData;
+    var value = editorData && editorData.values && editorData.values[colName] !== undefined ? editorData.values[colName] : cellData;
 
-    var disabled = overrides.disabled || editorState && editorState[rowId] && !editorState[rowId].isCreate && column.editable === 'create';
+    var disabled = overrides.disabled || editorState && editorData && !editorData.isCreate && column.editable === 'create';
 
     var inputProps = {
         disabled: disabled,

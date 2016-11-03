@@ -88,7 +88,7 @@ var Row = exports.Row = function (_Component) {
             var treeData = _props.treeData;
 
 
-            var id = row._key;
+            var id = row.get('_key');
 
             var visibleColumns = columns.filter(function (col) {
                 return !col.hidden;
@@ -99,12 +99,18 @@ var Row = exports.Row = function (_Component) {
                 addEmptyCells(row, columns);
             }
 
-            var isSelected = selectedRows ? selectedRows[id] : false;
+            var isSelected = selectedRows ? selectedRows.get(id) : false;
 
             var cells = Object.keys(cellValues).map(function (k, i) {
 
-                var cellProps = {
-                    cellData: getCellData(columns, editor, editorState, row, k, i, store),
+                var key = (0, _getData.getRowKey)(columns, row, columns[i].dataIndex);
+                var cellData = getCellData(columns, editor, editorState, row, k, i, store);
+                var cellTreeData = _extends({}, treeData, {
+                    expandable: columns[i].expandable
+                });
+
+                return _react2.default.createElement(_Cell.Cell, {
+                    cellData: cellData,
                     columns: columns,
                     dragAndDrop: dragAndDrop,
                     editor: editor,
@@ -112,27 +118,20 @@ var Row = exports.Row = function (_Component) {
                     events: events,
                     gridType: gridType,
                     index: i,
+                    isRowSelected: isSelected,
+                    key: key,
                     readFunc: readFunc,
                     reducerKeys: reducerKeys,
-                    rowData: cellValues,
+                    row: cellValues,
                     rowId: id,
                     rowIndex: index,
                     selectionModel: selectionModel,
                     showTreeRootNode: showTreeRootNode,
-                    stateful: stateful,
                     stateKey: stateKey,
-                    isRowSelected: isSelected,
+                    stateful: stateful,
                     store: store,
-                    treeData: _extends({}, treeData, {
-                        expandable: columns[i].expandable
-                    })
-                };
-
-                var key = (0, _getData.getRowKey)(columns, row, columns[i].dataIndex);
-
-                return _react2.default.createElement(_Cell.Cell, _extends({
-                    key: key
-                }, cellProps));
+                    treeData: cellTreeData
+                });
             });
 
             var editClass = editorState && editorState[id] && editor.config.type !== 'grid' ? selectionModel.defaults.editCls : '';
@@ -207,8 +206,8 @@ var Row = exports.Row = function (_Component) {
             // per issue #59
 
             e.dataTransfer.setData('text/plain', JSON.stringify({
-                id: row._key,
-                data: row
+                id: row.get('_key'),
+                data: row.toJS()
             }));
 
             return e;
@@ -259,14 +258,13 @@ Row.defaultProps = {
     treeData: {}
 };
 var getCellValues = exports.getCellValues = function getCellValues(columns, row) {
-
     var result = {};
     var dataIndexes = columns.map(function (col) {
         return col.dataIndex;
     });
 
     dataIndexes.forEach(function (idx) {
-        result[idx] = row[idx];
+        result[idx] = row.get(idx);
     });
 
     return result;
@@ -288,12 +286,12 @@ var addEmptyInsert = exports.addEmptyInsert = function addEmptyInsert(cells, vis
 
 var getCellData = exports.getCellData = function getCellData(columns, editor, editorState, row, key, index, store) {
 
-    var rowId = row._key;
+    var rowId = row.get('_key');
 
     // if a renderer is present, but
     // were in edited mode, we should use the edited values
     // since those could be modified using a 'change' function
-    var editedValues = editorState && editorState[rowId] && editorState[rowId].values ? editorState[rowId].values : {};
+    var editedValues = editorState && editorState.get(rowId) && editorState.get(rowId).values ? editorState.get(rowId).values : {};
 
     var valueAtDataIndex = (0, _getData.getData)(row, columns, index, editedValues);
 
@@ -319,7 +317,7 @@ var getCellData = exports.getCellData = function getCellData(columns, editor, ed
     // else no data index found
 };
 
-var addEmptyCells = exports.addEmptyCells = function addEmptyCells(rowData, columns) {
+var addEmptyCells = exports.addEmptyCells = function addEmptyCells(row, columns) {
 
     columns.forEach(function (col) {
 
@@ -328,15 +326,15 @@ var addEmptyCells = exports.addEmptyCells = function addEmptyCells(rowData, colu
         // how we retrieve and store data, especially editable
         // may need to be updated based on array dataIndex
 
-        if (rowData && !rowData.hasOwnProperty(col.dataIndex)) {
-            rowData[col.dataIndex] = '';
+        if (row && !row.get(col.dataIndex)) {
+            row.set(col.dataIndex, '');
         }
     });
 
-    return rowData;
+    return row;
 };
 
-var handleRowDoubleClickEvent = exports.handleRowDoubleClickEvent = function handleRowDoubleClickEvent(events, rowData, rowId, selectionModel, index, isSelected, reactEvent, id, browserEvent) {
+var handleRowDoubleClickEvent = exports.handleRowDoubleClickEvent = function handleRowDoubleClickEvent(events, row, rowId, selectionModel, index, isSelected, reactEvent, id, browserEvent) {
     if (selectionModel && selectionModel.defaults.selectionEvent === selectionModel.eventTypes.doubleclick) {
 
         selectionModel.handleSelectionEvent({
@@ -344,13 +342,13 @@ var handleRowDoubleClickEvent = exports.handleRowDoubleClickEvent = function han
             eventData: reactEvent,
             id: rowId,
             index: index,
-            data: rowData,
+            data: row,
             selected: !isSelected
         });
     }
 
     if (events.HANDLE_ROW_DOUBLE_CLICK) {
-        events.HANDLE_ROW_DOUBLE_CLICK.call(undefined, rowData, rowId, reactEvent, id, browserEvent);
+        events.HANDLE_ROW_DOUBLE_CLICK.call(undefined, row.toJS(), rowId, reactEvent, id, browserEvent);
     }
 };
 
@@ -364,14 +362,14 @@ var getSelectedText = exports.getSelectedText = function getSelectedText() {
     return text;
 };
 
-var handleRowSingleClickEvent = exports.handleRowSingleClickEvent = function handleRowSingleClickEvent(events, rowData, rowId, selectionModel, index, isSelected, reactEvent, id, browserEvent) {
+var handleRowSingleClickEvent = exports.handleRowSingleClickEvent = function handleRowSingleClickEvent(events, row, rowId, selectionModel, index, isSelected, reactEvent, id, browserEvent) {
 
     if (getSelectedText()) {
         return false;
     }
 
     if (events.HANDLE_BEFORE_ROW_CLICK) {
-        events.HANDLE_BEFORE_ROW_CLICK.call(undefined, rowData, rowId, reactEvent, id, browserEvent);
+        events.HANDLE_BEFORE_ROW_CLICK.call(undefined, row, rowId, reactEvent, id, browserEvent);
     }
 
     if (selectionModel && selectionModel.defaults.selectionEvent === selectionModel.eventTypes.singleclick) {
@@ -381,13 +379,13 @@ var handleRowSingleClickEvent = exports.handleRowSingleClickEvent = function han
             eventData: reactEvent,
             id: rowId,
             index: index,
-            data: rowData,
+            data: row,
             selected: !isSelected
         });
     }
 
     if (events.HANDLE_ROW_CLICK) {
-        events.HANDLE_ROW_CLICK.call(undefined, rowData, rowId, reactEvent, id, browserEvent);
+        events.HANDLE_ROW_CLICK.call(undefined, row, rowId, reactEvent, id, browserEvent);
     }
 };
 
@@ -427,8 +425,8 @@ var rowTarget = {
         var previousSiblingId = _getTreeData.previousSiblingId;
 
 
-        var path = [].concat(_toConsumableArray(getTreeData().path));
-        var targetPath = hoverPath;
+        var path = [].concat(_toConsumableArray(getTreeData().path.toJS()));
+        var targetPath = hoverPath.toJS();
 
         var targetIndex = hoverIndex;
         var targetParentId = hoverParentId;

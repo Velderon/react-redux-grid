@@ -12,7 +12,7 @@ var getCurrentRecords = exports.getCurrentRecords = function getCurrentRecords(d
     if (infinite) {
         var start = Math.max(viewableIndex - viewableCount * bufferMultiplier, 0);
 
-        var end = Math.min(viewableIndex + viewableCount * (bufferMultiplier + 1), dataSource.currentRecords.length);
+        var end = Math.min(viewableIndex + viewableCount * (bufferMultiplier + 1), dataSource.currentRecords.count());
 
         return {
             data: dataSource.currentRecords.slice(start, end),

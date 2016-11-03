@@ -57,6 +57,8 @@ function shouldPagerUpdate(nextProps, nextState) {
 
 function shouldHeaderUpdate(nextProps, nextState) {
     var result = true;
+    // to do, stop this
+    return true;
 
     var menuState = function menuState(state) {
         return state && state['header-row'];
@@ -83,6 +85,8 @@ function shouldHeaderUpdate(nextProps, nextState) {
 
 function shouldRowUpdate(nextProps) {
     var result = true;
+
+    return true;
 
     // unique key created by setData action/reducer
     var key = nextProps.row._key;

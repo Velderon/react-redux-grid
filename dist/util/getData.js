@@ -10,7 +10,7 @@ var _immutable = require('immutable');
 var _camelize = require('./camelize');
 
 var getData = exports.getData = function getData() {
-    var rowData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var row = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var columns = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var colIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
     var editorValues = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -33,9 +33,9 @@ var getData = exports.getData = function getData() {
     }
 
     if (typeof dataIndex === 'string') {
-        return rowData && rowData[dataIndex] !== undefined ? rowData[dataIndex] : null;
+        return row && row.get && row.get(dataIndex) !== undefined ? row.get(dataIndex) : null;
     } else if (Array.isArray(dataIndex)) {
-        return getValueFromDataIndexArr(rowData, dataIndex);
+        return getValueFromDataIndexArr(row, dataIndex);
     }
 };
 
@@ -70,7 +70,7 @@ var getRowKey = exports.getRowKey = function getRowKey(columns, rowValues, suffi
     var uniqueCol = columns.filter(function (col) {
         return col.createKeyFrom;
     });
-    var val = rowValues._key;
+    var val = rowValues.get('_key');
 
     if (uniqueCol.length > 1) {
         throw new Error('Only one column can declare createKeyFrom');
@@ -78,7 +78,7 @@ var getRowKey = exports.getRowKey = function getRowKey(columns, rowValues, suffi
 
     if (uniqueCol.length > 0) {
         var dataIndex = nameFromDataIndex(uniqueCol[0]);
-        val = rowValues && rowValues[dataIndex] ? rowValues[dataIndex] : rowValues._key;
+        val = rowValues && rowValues.get(dataIndex) ? rowValues.get(dataIndex) : rowValues.get('_key');
     }
 
     if (suffix) {
@@ -89,17 +89,17 @@ var getRowKey = exports.getRowKey = function getRowKey(columns, rowValues, suffi
 };
 
 var setDataAtDataIndex = exports.setDataAtDataIndex = function setDataAtDataIndex() {
-    var rowData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var row = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var dataIndex = arguments[1];
     var val = arguments[2];
 
 
     if (typeof dataIndex === 'string') {
-        rowData[dataIndex] = val;
-        return rowData;
+        row[dataIndex] = val;
+        return row;
     }
 
-    var temp = rowData;
+    var temp = row;
 
     for (var i = 0; i < dataIndex.length - 1; i++) {
         temp = temp[dataIndex[i]];
@@ -111,25 +111,26 @@ var setDataAtDataIndex = exports.setDataAtDataIndex = function setDataAtDataInde
 
     temp[dataIndex[dataIndex.length - 1]] = val;
 
-    return rowData;
+    return row;
 };
 
-var getValueFromDataIndexArr = exports.getValueFromDataIndexArr = function getValueFromDataIndexArr(rowData, dataIndex) {
-    var temp = rowData;
+var getValueFromDataIndexArr = exports.getValueFromDataIndexArr = function getValueFromDataIndexArr(row, dataIndex) {
+    // let temp = row;
 
-    for (var i = 0; i < dataIndex.length; i++) {
+    // for (let i = 0; i < dataIndex.length; i++) {
 
-        if (!temp[dataIndex[i]]) {
-            // preferring silent failure on get
-            // but we throw an error on the update
-            // if the key path is invalid
-            return '';
-        }
+    //     if (!temp[dataIndex[i]]) {
+    //         // preferring silent failure on get
+    //         // but we throw an error on the update
+    //         // if the key path is invalid
+    //         return '';
+    //     }
 
-        temp = temp[dataIndex[i]];
-    }
+    //     temp = temp[dataIndex[i]];
+    // }
 
-    return temp;
+    // return temp;
+    return row.getIn(dataIndex);
 };
 
 var nameFromDataIndex = exports.nameFromDataIndex = function nameFromDataIndex(column) {

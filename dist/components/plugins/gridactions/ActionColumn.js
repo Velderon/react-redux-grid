@@ -68,11 +68,13 @@ var ActionColumn = exports.ActionColumn = function (_Component) {
             var menuPosition = _state.menuPosition;
 
 
-            var menuShown = menuState && menuState[rowId] ? menuState[rowId] : false;
+            var menuShown = menuState && menuState.get(rowId) ? menuState.get(rowId) : false;
 
             var containerProps = {
                 className: (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.GRID_ACTIONS.CONTAINER, menuShown ? _GridConstants.CLASS_NAMES.GRID_ACTIONS.SELECTED_CLASS : '', menuPosition !== undefined ? menuPosition : ''),
+                /* eslint-disable react/jsx-no-bind */
                 onClick: handleActionClick.bind(this, type, actions, rowId, stateKey, store, menuShown, reducerKeys)
+                /* eslint-enable react/jsx-no-bind */
             };
 
             actions = enableActions(menuShown, actions, columns, rowData);
@@ -96,7 +98,7 @@ var ActionColumn = exports.ActionColumn = function (_Component) {
             var menuPosition = this.state.menuPosition;
 
 
-            var menuShown = menuState && menuState[rowId] ? menuState[rowId] : false;
+            var menuShown = menuState && menuState.get(rowId) ? menuState.get(rowId) : false;
 
             if (menuShown && !menuPosition) {
 
@@ -140,6 +142,7 @@ ActionColumn.propTypes = {
     actions: _react.PropTypes.object,
     columns: _react.PropTypes.array,
     editor: _react.PropTypes.object,
+    events: _react.PropTypes.object,
     headerActionItemBuilder: _react.PropTypes.func,
     iconCls: _react.PropTypes.string,
     menuState: _react.PropTypes.object,

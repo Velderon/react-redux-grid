@@ -13,6 +13,8 @@ var _immutable = require('immutable');
 
 var _lastUpdate = require('./../../util/lastUpdate');
 
+var _records = require('./../../records');
+
 var _getTreePathFromId = require('./../../util/getTreePathFromId');
 
 var _moveTreeNode = require('./../../util/moveTreeNode');
@@ -38,11 +40,11 @@ var setData = exports.setData = function setData(state, _ref) {
 
     var keyedData = (0, _getData.setKeysInData)(data);
 
-    return state.setIn([stateKey], (0, _immutable.fromJS)({
+    return state.setIn([stateKey], new _records.DataSource({
         data: keyedData,
         proxy: keyedData,
         total: total || keyedData.count(),
-        treeData: treeData,
+        treeData: (0, _immutable.fromJS)(treeData),
         gridType: gridType || 'grid',
         currentRecords: currentRecords ? (0, _immutable.List)(currentRecords) : keyedData,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
@@ -67,7 +69,7 @@ var setPartialTreeData = exports.setPartialTreeData = function setPartialTreeDat
         updatedFlat = updatedFlat.shift();
     }
 
-    return state.mergeIn([stateKey], {
+    var record = state.get(stateKey).merge({
         data: updatedFlat,
         currentRecords: updatedFlat,
         treeData: updatedTree,
@@ -75,6 +77,8 @@ var setPartialTreeData = exports.setPartialTreeData = function setPartialTreeDat
         total: updatedFlat.count(),
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     });
+
+    return state.setIn([stateKey], record);
 };
 
 var dismissEditor = exports.dismissEditor = function dismissEditor(state, _ref3) {
@@ -90,15 +94,19 @@ var dismissEditor = exports.dismissEditor = function dismissEditor(state, _ref3)
         previousTotal = previousProxy.size;
     }
 
-    if (state.get(stateKey)) {
-        return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    var record = state.get(stateKey);
+
+    if (record) {
+        var updated = record.merge({
             data: previousProxy,
             proxy: previousProxy,
             currentRecords: previousProxy,
             total: previousTotal,
             isEditing: false,
             lastUpdate: (0, _lastUpdate.generateLastUpdate)()
-        }));
+        });
+
+        return state.setIn([stateKey], updated);
     }
 
     return state;
@@ -110,12 +118,16 @@ var removeRow = exports.removeRow = function removeRow(state, _ref4) {
 
     var remainingRows = state.getIn([stateKey, 'data']).remove(rowIndex || 0, 1);
 
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    var record = state.get(stateKey);
+
+    var updated = record.merge({
         data: remainingRows,
         proxy: remainingRows,
         currentRecords: remainingRows,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
-    }));
+    });
+
+    return state.setIn([stateKey], updated);
 };
 
 var updateRow = exports.updateRow = function updateRow(state, _ref5) {
@@ -134,12 +146,16 @@ var updateRow = exports.updateRow = function updateRow(state, _ref5) {
     var updatedRow = row.merge(values);
     var updatedData = state.getIn([stateKey, 'data']).set(rowIndex, updatedRow);
 
-    return state.mergeIn([stateKey], {
+    var record = state.get(stateKey);
+
+    var updated = record.merge({
         data: updatedData,
         proxy: updatedData,
         currentRecords: updatedData,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     });
+
+    return state.setIn([stateKey], updated);
 };
 
 var addNewRow = exports.addNewRow = function addNewRow(state, _ref6) {
@@ -165,14 +181,15 @@ var addNewRow = exports.addNewRow = function addNewRow(state, _ref6) {
     }
 
     var newData = data.unshift(newRow);
-
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    var updated = existingState.merge({
         data: newData,
         proxy: data,
         isEditing: true,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)(),
         total: newData.size
-    }));
+    });
+
+    return state.setIn([stateKey], updated);
 };
 
 var moveNode = exports.moveNode = function moveNode(state, _ref7) {
@@ -194,13 +211,16 @@ var moveNode = exports.moveNode = function moveNode(state, _ref7) {
         flatMove = flatMove.shift();
     }
 
-    return state.mergeIn([stateKey], {
+    var record = state.get(stateKey);
+    var updated = record.merge({
         data: flatMove,
         currentRecords: flatMove,
         treeData: newTreeMove,
         proxy: flatMove,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     });
+
+    return state.setIn([stateKey], updated);
 };
 
 var setTreeNodeVisibility = exports.setTreeNodeVisibility = function setTreeNodeVisibility(state, _ref8) {
@@ -228,13 +248,16 @@ var setTreeNodeVisibility = exports.setTreeNodeVisibility = function setTreeNode
         updatedList = updatedList.shift();
     }
 
-    state = state.setIn([stateKey, 'data'], updatedList);
-    state = state.setIn([stateKey, 'currentRecords'], updatedList);
-    state = state.setIn([stateKey, 'treeData'], updatedTree);
-    state = state.setIn([stateKey, 'proxy'], updatedList);
-    state = state.setIn([stateKey, 'lastUpdate'], (0, _lastUpdate.generateLastUpdate)());
+    var record = state.get(stateKey);
+    var updated = record.merge({
+        data: updatedList,
+        currentRecords: updatedList,
+        treeData: updatedTree,
+        proxy: updatedList,
+        lastUpdate: (0, _lastUpdate.generateLastUpdate)()
+    });
 
-    return state;
+    return state.setIn([stateKey], updated);
 };
 
 var saveRow = exports.saveRow = function saveRow(state, _ref9) {
@@ -244,21 +267,29 @@ var saveRow = exports.saveRow = function saveRow(state, _ref9) {
 
     var data = state.getIn([stateKey, 'data']).set(rowIndex, (0, _immutable.fromJS)(values));
 
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    var record = state.get(stateKey);
+    var updated = record.merge({
         data: data,
         proxy: data,
         currentRecords: data,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
-    }));
+    });
+
+    return state.setIn([stateKey], updated);
 };
 
 var sortData = exports.sortData = function sortData(state, _ref10) {
     var data = _ref10.data;
     var stateKey = _ref10.stateKey;
-    return state.mergeIn([stateKey], {
+
+
+    var record = state.get(stateKey);
+    var updated = record.merge({
         data: data,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     });
+
+    return state.setIn([stateKey], updated);
 };
 
 var clearFilter = exports.clearFilter = function clearFilter(state, _ref11) {
@@ -268,19 +299,26 @@ var clearFilter = exports.clearFilter = function clearFilter(state, _ref11) {
     var prevData = state.getIn([stateKey, 'data']);
     var recs = proxy || prevData;
 
-    return state.mergeIn([stateKey], {
+    var record = state.get(stateKey);
+    var updated = record.merge({
         data: recs,
         proxy: recs,
         currentRecords: recs,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     });
+
+    return state.setIn([stateKey], updated);
 };
 
 var filterData = exports.filterData = function filterData(state, _ref12) {
     var data = _ref12.data;
     var stateKey = _ref12.stateKey;
-    return state.mergeIn([stateKey], {
+
+    var record = state.get(stateKey);
+    var updated = record.merge({
         data: data,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     });
+
+    return state.setIn([stateKey], updated);
 };

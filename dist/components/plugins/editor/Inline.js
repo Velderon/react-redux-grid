@@ -66,11 +66,11 @@ var Inline = exports.Inline = function (_Component) {
             var top = -100;
 
             if (isEditorShown(editorState)) {
-                top = editorState[editedRowKey].top;
+                top = editorState.get(editedRowKey).top;
             }
 
             var inlineEditorProps = {
-                className: (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.EDITOR.INLINE.CONTAINER, editorState && editorState[editedRowKey] ? _GridConstants.CLASS_NAMES.EDITOR.INLINE.SHOWN : _GridConstants.CLASS_NAMES.EDITOR.INLINE.HIDDEN, position),
+                className: (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.EDITOR.INLINE.CONTAINER, editorState && editorState.get(editedRowKey) ? _GridConstants.CLASS_NAMES.EDITOR.INLINE.SHOWN : _GridConstants.CLASS_NAMES.EDITOR.INLINE.HIDDEN, position),
                 style: {
                     top: top + 'px'
                 }
@@ -128,9 +128,9 @@ var Inline = exports.Inline = function (_Component) {
                 return false;
             }
 
-            if (isEditorShown(editorState) && this.editedRow !== editorState[editedRowKey].rowIndex) {
+            if (isEditorShown(editorState) && this.editedRow !== editorState.get(editedRowKey).rowIndex) {
 
-                this.editedRow = editorState[editedRowKey].rowIndex;
+                this.editedRow = editorState.get(editedRowKey).rowIndex;
                 focusFirstEditor(dom);
             } else if (!isEditorShown(editorState)) {
                 this.editedRow = null;
@@ -182,11 +182,11 @@ function resetEditorPosition(editorState, store, stateKey, dom, position, rowId)
 
         var moveToTop = spaceBottom < row.clientHeight * 2;
 
-        if (row && editorState && editorState[editedRowKey] && editorState[editedRowKey].top) {
+        if (row && editorState && editorState.get(editedRowKey) && editorState.get(editedRowKey).top) {
 
             var top = (0, _getEditorTop.getEditorTop)(row, moveToTop, dom);
 
-            if (top !== editorState[editedRowKey].top) {
+            if (top !== editorState.get(editedRowKey).top) {
                 store.dispatch((0, _EditorActions.repositionEditor)({
                     stateKey: stateKey,
                     top: top,
@@ -208,9 +208,20 @@ function resetEditorPosition(editorState, store, stateKey, dom, position, rowId)
 }
 
 var getEditedRowKey = exports.getEditedRowKey = function getEditedRowKey(editorState) {
-    return editorState ? Object.keys(editorState).find(function (k) {
+
+    if (!editorState) {
+        return null;
+    }
+
+    var p = editorState.find(function (k) {
         return k !== 'lastUpdate';
-    }) : null;
+    });
+
+    if (!p || !p.get) {
+        return null;
+    }
+
+    return p.get('key');
 };
 
 var focusFirstEditor = exports.focusFirstEditor = function focusFirstEditor(dom) {
@@ -223,7 +234,7 @@ var focusFirstEditor = exports.focusFirstEditor = function focusFirstEditor(dom)
 
 var isEditorShown = exports.isEditorShown = function isEditorShown(editorState) {
     var editedRowKey = getEditedRowKey(editorState);
-    return editorState && editorState[editedRowKey];
+    return editorState && editorState.get(editedRowKey);
 };
 
 Inline.propTypes = {

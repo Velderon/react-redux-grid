@@ -23,9 +23,9 @@ import {
 const config = {
     columns,
     // data,
-    // data: treeData,/
+    // data: treeData,
     dataSource: treeDataSource,
-    // infinite: true,
+    infinite: true,
     stateful: false,
     // dataSource,
     dragAndDrop: true,

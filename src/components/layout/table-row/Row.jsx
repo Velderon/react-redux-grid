@@ -75,14 +75,14 @@ export class Row extends Component {
                     dragAndDrop={dragAndDrop}
                     editor={editor}
                     editorState={editorState}
-                    event={events}
+                    events={events}
                     gridType={gridType}
                     index={i}
                     isRowSelected={isSelected}
                     key={ key }
                     readFunc={readFunc}
                     reducerKeys={reducerKeys}
-                    rowData={cellValues}
+                    row={cellValues}
                     rowId={id}
                     rowIndex={index}
                     selectionModel={selectionModel}
@@ -219,8 +219,8 @@ export class Row extends Component {
         // only use is setting meta data for custom drop events
         // per issue #59
         e.dataTransfer.setData('text/plain', JSON.stringify({
-            id: row._key,
-            data: row
+            id: row.get('_key'),
+            data: row.toJS()
         }));
 
         return e;
@@ -319,7 +319,7 @@ export const addEmptyCells = (row, columns) => {
 
 export const handleRowDoubleClickEvent = (
     events,
-    rowData,
+    row,
     rowId,
     selectionModel,
     index,
@@ -337,14 +337,14 @@ export const handleRowDoubleClickEvent = (
             eventData: reactEvent,
             id: rowId,
             index,
-            data: rowData,
+            data: row,
             selected: !isSelected
         });
     }
 
     if (events.HANDLE_ROW_DOUBLE_CLICK) {
         events.HANDLE_ROW_DOUBLE_CLICK.call(
-            this, rowData, rowId, reactEvent, id, browserEvent
+            this, row.toJS(), rowId, reactEvent, id, browserEvent
         );
     }
 };
@@ -439,8 +439,8 @@ const rowTarget = {
             previousSiblingId
         } = getTreeData();
 
-        const path = [...getTreeData().path];
-        const targetPath = hoverPath;
+        const path = [...getTreeData().path.toJS()];
+        const targetPath = hoverPath.toJS();
 
         let targetIndex = hoverIndex;
         let targetParentId = hoverParentId;

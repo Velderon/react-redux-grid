@@ -9,6 +9,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _immutable = require('immutable');
 
+var _records = require('./../../../records');
+
 var _lastUpdate = require('./../../../util/lastUpdate');
 
 var _getData = require('./../../../util/getData');
@@ -42,7 +44,7 @@ var editRow = exports.editRow = function editRow(state, _ref) {
 
     var operation = editMode === 'inline' ? 'setIn' : 'mergeIn';
 
-    return state[operation]([stateKey], (0, _immutable.fromJS)((_fromJS = {}, _defineProperty(_fromJS, rowId, {
+    return state[operation]([stateKey], (0, _immutable.fromJS)((_fromJS = {}, _defineProperty(_fromJS, rowId, new _records.Editor({
         key: rowId,
         values: values,
         rowIndex: rowIndex,
@@ -50,7 +52,7 @@ var editRow = exports.editRow = function editRow(state, _ref) {
         valid: isValid,
         isCreate: isCreate || false,
         overrides: iOverrides
-    }), _defineProperty(_fromJS, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _fromJS)));
+    })), _defineProperty(_fromJS, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _fromJS)));
 };
 
 var setData = exports.setData = function setData(state, _ref2) {
@@ -62,7 +64,7 @@ var setData = exports.setData = function setData(state, _ref2) {
 
         var keyedData = (0, _getData.setKeysInData)(data);
         var editorData = keyedData.reduce(function (prev, curr, i) {
-            return prev.set(curr.get('_key'), (0, _immutable.fromJS)({
+            return prev.set(curr.get('_key'), new _records.Editor({
                 key: curr.get('_key'),
                 values: curr,
                 rowIndex: i,
@@ -87,8 +89,8 @@ var rowValueChange = exports.rowValueChange = function rowValueChange(state, _re
     var stateKey = _ref3.stateKey;
 
 
-    var previousValues = state.getIn([stateKey, rowId, 'values']) ? state.getIn([stateKey, rowId, 'values']).toJS() : {};
-    var overrides = state.getIn([stateKey, rowId, 'overrides']) ? state.getIn([stateKey, rowId, 'overrides']).toJS() : {};
+    var previousValues = state.getIn([stateKey, rowId]).values || {};
+    var overrides = state.getIn([stateKey, rowId]).overrides || {};
 
     var rowValues = (0, _getData.setDataAtDataIndex)(previousValues, column.dataIndex, value);
 
@@ -112,12 +114,15 @@ var rowValueChange = exports.rowValueChange = function rowValueChange(state, _re
 
     var valid = isRowValid(columns, rowValues);
 
-    state = state.mergeIn([stateKey, rowId], {
+    var record = state.getIn([stateKey, rowId]) || new _records.Editor();
+    var updated = record.merge((0, _immutable.Map)({
         values: rowValues,
-        previousValues: state.getIn([stateKey, rowId, 'values']),
+        previousValues: record.values,
         valid: valid,
         overrides: overrides
-    });
+    }));
+
+    state = state.setIn([stateKey, rowId], updated);
 
     return state.setIn([stateKey, 'lastUpdate'], (0, _lastUpdate.generateLastUpdate)());
 };
@@ -127,9 +132,9 @@ var repositionEditor = exports.repositionEditor = function repositionEditor(stat
     var stateKey = _ref4.stateKey;
     var top = _ref4.top;
 
-    var newState = state.mergeIn([stateKey, rowId], {
-        top: top
-    });
+    var record = state.getIn([stateKey, rowId]);
+    var updated = record.merge({ top: top });
+    var newState = state.mergeIn([stateKey, rowId], updated);
 
     return newState.mergeIn([stateKey], { lastUpdate: (0, _lastUpdate.generateLastUpdate)() });
 };

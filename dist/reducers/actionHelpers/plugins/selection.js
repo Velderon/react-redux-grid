@@ -9,7 +9,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _immutable = require('immutable');
+var _records = require('./../../../records');
 
 var _lastUpdate = require('./../../../util/lastUpdate');
 
@@ -18,49 +18,49 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var selectAll = exports.selectAll = function selectAll(state, _ref) {
     var selection = _ref.selection;
     var stateKey = _ref.stateKey;
-    return state.setIn([stateKey], (0, _immutable.fromJS)(_extends({}, selection, {
+    return state.setIn([stateKey], new _records.Selection(_extends({}, selection, {
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     })));
 };
 
 var deselectAll = exports.deselectAll = function deselectAll(state, _ref2) {
     var stateKey = _ref2.stateKey;
-    return state.setIn([stateKey], (0, _immutable.fromJS)({
+    return state.setIn([stateKey], new _records.Selection({
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     }));
 };
 
 var removeSelections = exports.removeSelections = function removeSelections(state, _ref3) {
     var stateKey = _ref3.stateKey;
-    return state.setIn([stateKey], (0, _immutable.fromJS)({
+    return state.setIn([stateKey], new _records.Selection({
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     }));
 };
 
 var selectRow = exports.selectRow = function selectRow(state, _ref4) {
-    var _fromJS;
+    var _ref5;
 
     var rowId = _ref4.rowId;
     var stateKey = _ref4.stateKey;
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)((_fromJS = {}, _defineProperty(_fromJS, rowId, true), _defineProperty(_fromJS, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _fromJS)));
+    return state.mergeIn([stateKey], new _records.Selection((_ref5 = {}, _defineProperty(_ref5, rowId, true), _defineProperty(_ref5, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _ref5)));
 };
 
-var deselectRow = exports.deselectRow = function deselectRow(state, _ref5) {
-    var _fromJS2;
+var deselectRow = exports.deselectRow = function deselectRow(state, _ref6) {
+    var _ref7;
 
-    var rowId = _ref5.rowId;
-    var stateKey = _ref5.stateKey;
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)((_fromJS2 = {}, _defineProperty(_fromJS2, rowId, false), _defineProperty(_fromJS2, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _fromJS2)));
-};
-
-var setSelection = exports.setSelection = function setSelection(state, _ref6) {
-    var _fromJS4;
-
-    var allowDeselect = _ref6.allowDeselect;
-    var clearSelections = _ref6.clearSelections;
-    var id = _ref6.id;
-    var index = _ref6.index;
+    var rowId = _ref6.rowId;
     var stateKey = _ref6.stateKey;
+    return state.mergeIn([stateKey], new _records.Selection((_ref7 = {}, _defineProperty(_ref7, rowId, false), _defineProperty(_ref7, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _ref7)));
+};
+
+var setSelection = exports.setSelection = function setSelection(state, _ref8) {
+    var _ref10;
+
+    var allowDeselect = _ref8.allowDeselect;
+    var clearSelections = _ref8.clearSelections;
+    var id = _ref8.id;
+    var index = _ref8.index;
+    var stateKey = _ref8.stateKey;
 
     var currentValue = state.getIn([stateKey, id]);
     var currentIndexes = state.getIn([stateKey, 'indexes']);
@@ -68,13 +68,13 @@ var setSelection = exports.setSelection = function setSelection(state, _ref6) {
     var indexes = setIndexes(index, currentIndexes && currentIndexes.toJS ? currentIndexes.toJS() : currentIndexes, !isSelectAction);
 
     if (clearSelections || !state.get(stateKey)) {
-        var _fromJS3;
+        var _ref9;
 
-        return state.setIn([stateKey], (0, _immutable.fromJS)((_fromJS3 = {}, _defineProperty(_fromJS3, id, isSelectAction), _defineProperty(_fromJS3, 'indexes', isSelectAction ? [index] : []), _defineProperty(_fromJS3, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _fromJS3)));
+        return state.setIn([stateKey], new _records.Selection((_ref9 = {}, _defineProperty(_ref9, id, isSelectAction), _defineProperty(_ref9, 'indexes', isSelectAction ? [index] : []), _defineProperty(_ref9, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _ref9)));
     }
 
     // multiselect
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)((_fromJS4 = {}, _defineProperty(_fromJS4, id, isSelectAction), _defineProperty(_fromJS4, 'indexes', indexes), _defineProperty(_fromJS4, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _fromJS4)));
+    return state.mergeIn([stateKey], new _records.Selection((_ref10 = {}, _defineProperty(_ref10, id, isSelectAction), _defineProperty(_ref10, 'indexes', indexes), _defineProperty(_ref10, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _ref10)));
 };
 
 var setIndexes = exports.setIndexes = function setIndexes(ids) {

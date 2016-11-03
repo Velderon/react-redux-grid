@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.setColumnsInStorage = exports.resizeColumns = exports.setSortDirection = exports.setColumns = exports.hideHeader = undefined;
 
-var _immutable = require('immutable');
-
 var _lastUpdate = require('./../../util/lastUpdate');
+
+var _records = require('./../../records');
 
 var _LocalStorageManager = require('./../../components/core/LocalStorageManager');
 
@@ -20,7 +20,7 @@ var debouncedColumnSetter = _LocalStorageManager2.default.debouncedSetStateItem(
 var hideHeader = exports.hideHeader = function hideHeader(state, _ref) {
     var stateKey = _ref.stateKey;
     var headerHidden = _ref.headerHidden;
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    return state.setIn([stateKey], new _records.Grid({
         headerHidden: headerHidden,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     }));
@@ -38,7 +38,7 @@ var setColumns = exports.setColumns = function setColumns(state, _ref2) {
         });
     }
 
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    return state.setIn([stateKey], new _records.Grid({
         columns: columns,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     }));
@@ -47,7 +47,7 @@ var setColumns = exports.setColumns = function setColumns(state, _ref2) {
 var setSortDirection = exports.setSortDirection = function setSortDirection(state, _ref3) {
     var stateKey = _ref3.stateKey;
     var columns = _ref3.columns;
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    return state.setIn([stateKey], new _records.Grid({
         columns: columns,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     }));
@@ -65,7 +65,7 @@ var resizeColumns = exports.resizeColumns = function resizeColumns(state, _ref4)
         });
     }
 
-    return state.mergeIn([stateKey], (0, _immutable.fromJS)({
+    return state.setIn([stateKey], new _records.Grid({
         columns: columns,
         lastUpdate: (0, _lastUpdate.generateLastUpdate)()
     }));

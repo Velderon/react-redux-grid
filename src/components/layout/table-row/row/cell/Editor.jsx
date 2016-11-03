@@ -3,6 +3,7 @@ import { Input } from './Input';
 import { CLASS_NAMES } from './../../../../../constants/GridConstants';
 import { prefix } from './../../../../../util/prefix';
 import { nameFromDataIndex } from './../../../../../util/getData';
+import { Editor as EditorRecord } from './../../../../../records';
 
 const wrapperCls = prefix(CLASS_NAMES.EDITOR.INLINE.INPUT_WRAPPER);
 
@@ -13,22 +14,12 @@ export const Editor = ({
     rawValue,
     index,
     isEditable,
-    rowData,
+    row,
     isRowSelected,
     rowId,
     stateKey,
     store
 }) => {
-
-    if (!editorState) {
-        editorState = {};
-    }
-
-    if (!editorState[rowId]) {
-        editorState[rowId] = {};
-    }
-
-    // editorState[rowId].key = rowId;
 
     let colName = columns
         && columns[index]
@@ -43,12 +34,14 @@ export const Editor = ({
         : '';
     }
 
-    const value = editorState[rowId].values
-        ? editorState[rowId].values[colName]
+    const editorData = editorState.get(rowId);
+
+    const value = editorData.values
+        ? editorData.values.get(colName)
         : rawValue;
 
     const editableFuncArgs = {
-        row: editorState[rowId],
+        row: editorState.get(rowId),
         isRowSelected,
         store
     };
@@ -68,9 +61,9 @@ export const Editor = ({
                 columns,
                 store,
                 rowId,
-                row: editorState[rowId] && editorState[rowId].values
-                    ? { ...rowData, ...cleanProps(editorState[rowId].values) }
-                    : { key: rowId, ...rowData },
+                row: editorData && editorData.values
+                    ? { ...row, ...cleanProps(editorData.values) }
+                    : { key: rowId, ...row },
                 columnIndex: index,
                 value,
                 isRowSelected,
@@ -91,6 +84,8 @@ export const Editor = ({
         && (typeof columns[index].editable === 'function'
                 ? columns[index].editable(editableFuncArgs)
                 : true)) {
+
+        debugger;
         return (
             <span className={ wrapperCls }>
                 <Input
@@ -127,8 +122,8 @@ Editor.propTypes = {
     index: number,
     isEditable: bool,
     isRowSelected: bool,
+    row: object,
     rawValue: any,
-    rowData: object,
     rowId: string,
     stateKey: string,
     store: object

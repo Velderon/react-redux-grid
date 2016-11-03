@@ -38,7 +38,7 @@ var Button = exports.Button = function Button(_ref) {
         className: type === BUTTON_TYPES.SAVE ? (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.EDITOR.INLINE.SAVE_BUTTON) : (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.EDITOR.INLINE.CANCEL_BUTTON)
     };
 
-    if (type === BUTTON_TYPES.SAVE && editorState && editorState[editedRowKey] && !editorState[editedRowKey].valid) {
+    if (type === BUTTON_TYPES.SAVE && editorState && editorState.get(editedRowKey) && !editorState.get(editedRowKey).valid) {
         buttonProps.disabled = true;
     }
 
@@ -73,7 +73,9 @@ Button.defaultProps = {
 
 var onButtonClick = exports.onButtonClick = function onButtonClick(BUTTON_TYPES, editorState, events, type, stateKey, editedRowKey, store) {
 
-    var values = _extends({}, editorState[editedRowKey].values, { _key: editedRowKey });
+    var values = _extends({}, editorState.get(editedRowKey).values, {
+        _key: editedRowKey
+    });
 
     if (type === BUTTON_TYPES.SAVE && events.HANDLE_BEFORE_INLINE_EDITOR_SAVE) {
 
@@ -94,7 +96,7 @@ var onButtonClick = exports.onButtonClick = function onButtonClick(BUTTON_TYPES,
 
         store.dispatch((0, _EditorActions.saveRow)({
             values: values,
-            rowIndex: editorState[editedRowKey].rowIndex,
+            rowIndex: editorState.get(editedRowKey).rowIndex,
             stateKey: stateKey
         }));
 

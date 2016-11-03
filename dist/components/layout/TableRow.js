@@ -17,6 +17,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _immutable = require('immutable');
+
 var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
@@ -101,7 +103,7 @@ var TableRow = exports.TableRow = function (_Component) {
 
             var pageIndex = pager && pager.pageIndex ? pager.pageIndex : 0;
 
-            var totalCount = dataSource && Array.isArray(dataSource.currentRecords) ? dataSource.currentRecords.length : 0;
+            var totalCount = dataSource && _immutable.List.isList(dataSource.currentRecords) ? dataSource.currentRecords.count() : 0;
 
             var _state = this.state;
             var viewableCount = _state.viewableCount;
@@ -109,11 +111,11 @@ var TableRow = exports.TableRow = function (_Component) {
             var rowHeight = _state.rowHeight;
 
 
-            var rows = getRowSelection(dataSource, infinite, pageIndex, pageSize, pager, plugins, viewableIndex, viewableCount, BUFFER_MULTIPLIER, stateKey, store);
+            var rows = getRowSelection(dataSource, infinite, pageIndex, pageSize, pager, plugins, viewableIndex, viewableCount, BUFFER_MULTIPLIER);
 
             var rowComponents = getRows(columns, columnManager, dragAndDrop, editor, editorState, gridType, menuState, reducerKeys, readFunc, rows, events, this.moveRow, plugins, selectionModel, selectedRows, showTreeRootNode, stateful, stateKey, store, containerScrollTop, infinite, totalCount, rowHeight, viewableIndex, viewableCount, BUFFER_MULTIPLIER);
 
-            var rowInsert = Array.isArray(rowComponents) && rowComponents.length > 0 ? rowComponents : _react2.default.createElement(_PlaceHolder.PlaceHolder, { emptyDataMessage: emptyDataMessage });
+            var rowInsert = _immutable.List.isList(rowComponents) && rowComponents.count() > 0 ? rowComponents : _react2.default.createElement(_PlaceHolder.PlaceHolder, { emptyDataMessage: emptyDataMessage });
 
             return _react2.default.createElement(
                 'tbody',
@@ -278,7 +280,7 @@ var getRowComponents = exports.getRowComponents = function getRowComponents(colu
     }));
 };
 
-var getRowSelection = exports.getRowSelection = function getRowSelection(dataSource, infinite, pageIndex, pageSize, pager, plugins, viewableIndex, viewableCount, bufferMultiplier, stateKey, store) {
+var getRowSelection = exports.getRowSelection = function getRowSelection(dataSource, infinite, pageIndex, pageSize, pager, plugins, viewableIndex, viewableCount, bufferMultiplier) {
 
     if (!dataSource) {
         return false;
@@ -293,7 +295,7 @@ var getRowSelection = exports.getRowSelection = function getRowSelection(dataSou
 
 var getRows = exports.getRows = function getRows(columns, columnManager, dragAndDrop, editor, editorState, gridType, menuState, reducerKeys, readFunc, rows, events, moveRow, plugins, selectionModel, selectedRows, showTreeRootNode, stateful, stateKey, store, containerScrollTop, infinite, totalCount, rowHeight, viewableIndex, viewableCount, bufferMultiplier) {
 
-    var rowArray = Array.isArray(rows) ? rows.map(function (row, i) {
+    var rowArray = _immutable.List.isList(rows) ? rows.map(function (row, i) {
         return getRowComponents(columns, columnManager, dragAndDrop, editor, editorState, gridType, menuState, reducerKeys, readFunc, row, events, moveRow, plugins, selectionModel, selectedRows, showTreeRootNode, stateful, stateKey, store, i);
     }) : [];
 
@@ -326,23 +328,23 @@ var getRows = exports.getRows = function getRows(columns, columnManager, dragAnd
 
 var getTreeData = exports.getTreeData = function getTreeData(row) {
     return {
-        depth: row._depth,
-        parentId: row._parentId,
-        id: row._id,
-        index: row._index,
-        flatIndex: row._flatIndex,
-        leaf: row._leaf,
-        hasChildren: row._hasChildren,
-        isExpanded: row._isExpanded,
-        isLastChild: row._isLastChild,
-        isFirstChild: row._isFirstChild,
-        previousSiblingId: row._previousSiblingId,
-        previousSiblingTotalChildren: row._previousSiblingTotalChilden,
-        previousSiblingChildIds: row._previousSiblingChildIds,
-        parentTotalChildren: row._parentTotalChildren,
-        parentIndex: row._parentIndex,
-        indexPath: row._indexPath,
-        path: row._path
+        depth: row.get('_depth'),
+        parentId: row.get('_parentId'),
+        id: row.get('_id'),
+        index: row.get('_index'),
+        flatIndex: row.get('_flatIndex'),
+        leaf: row.get('_leaf'),
+        hasChildren: row.get('_hasChildren'),
+        isExpanded: row.get('_isExpanded'),
+        isLastChild: row.get('_isLastChild'),
+        isFirstChild: row.get('_isFirstChild'),
+        previousSiblingId: row.get('_previousSiblingId'),
+        previousSiblingTotalChildren: row.get('_previousSiblingTotalChilden'),
+        previousSiblingChildIds: row.get('_previousSiblingChildIds'),
+        parentTotalChildren: row.get('_parentTotalChildren'),
+        parentIndex: row.get('_parentIndex'),
+        indexPath: row.get('_indexPath'),
+        path: row.get('_path')
     };
 };
 

@@ -19,6 +19,8 @@ var _prefix = require('./../../../../../util/prefix');
 
 var _getData = require('./../../../../../util/getData');
 
+var _records = require('./../../../../../records');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var wrapperCls = (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.EDITOR.INLINE.INPUT_WRAPPER);
@@ -30,22 +32,12 @@ var Editor = exports.Editor = function Editor(_ref) {
     var rawValue = _ref.rawValue;
     var index = _ref.index;
     var isEditable = _ref.isEditable;
-    var rowData = _ref.rowData;
+    var row = _ref.row;
     var isRowSelected = _ref.isRowSelected;
     var rowId = _ref.rowId;
     var stateKey = _ref.stateKey;
     var store = _ref.store;
 
-
-    if (!editorState) {
-        editorState = {};
-    }
-
-    if (!editorState[rowId]) {
-        editorState[rowId] = {};
-    }
-
-    editorState[rowId].key = rowId;
 
     var colName = columns && columns[index] ? (0, _getData.nameFromDataIndex)(columns[index]) : '';
 
@@ -53,10 +45,12 @@ var Editor = exports.Editor = function Editor(_ref) {
         colName = columns && columns[index] && columns[index].name ? columns[index].name : '';
     }
 
-    var value = editorState[rowId].values ? editorState[rowId].values[colName] : rawValue;
+    var editorData = editorState.get(rowId);
+
+    var value = editorData.values ? editorData.values.get(colName) : rawValue;
 
     var editableFuncArgs = {
-        row: editorState[rowId],
+        row: editorState.get(rowId),
         isRowSelected: isRowSelected,
         store: store
     };
@@ -68,7 +62,7 @@ var Editor = exports.Editor = function Editor(_ref) {
             columns: columns,
             store: store,
             rowId: rowId,
-            row: editorState[rowId] && editorState[rowId].values ? _extends({}, rowData, cleanProps(editorState[rowId].values)) : _extends({ key: rowId }, rowData),
+            row: editorData && editorData.values ? _extends({}, row, cleanProps(editorData.values)) : _extends({ key: rowId }, row),
             columnIndex: index,
             value: value,
             isRowSelected: isRowSelected,
@@ -81,6 +75,8 @@ var Editor = exports.Editor = function Editor(_ref) {
             input
         );
     } else if (isEditable && columns[index] && (columns[index].editable === undefined || columns[index].editable) && (typeof columns[index].editable === 'function' ? columns[index].editable(editableFuncArgs) : true)) {
+
+        debugger;
         return _react2.default.createElement(
             'span',
             { className: wrapperCls },
@@ -127,8 +123,8 @@ Editor.propTypes = {
     index: number,
     isEditable: bool,
     isRowSelected: bool,
+    row: object,
     rawValue: any,
-    rowData: object,
     rowId: string,
     stateKey: string,
     store: object

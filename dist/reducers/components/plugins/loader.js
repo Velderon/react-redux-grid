@@ -8,8 +8,6 @@ var _immutable = require('immutable');
 
 var _ActionTypes = require('../../../constants/ActionTypes');
 
-var _lastUpdate = require('./../../../util/lastUpdate');
-
 var _loader = require('./../../actionHelpers/plugins/loader');
 
 var _handleActions2 = require('./../../../util/handleActions');
@@ -20,6 +18,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var initialState = (0, _immutable.fromJS)({ lastUpdate: (0, _lastUpdate.generateLastUpdate)() });
+var initialState = new _immutable.OrderedMap();
 
 exports.default = (0, _handleActions3.default)(_defineProperty({}, _ActionTypes.SET_LOADING_STATE, _loader.setLoading), initialState);

@@ -55,8 +55,8 @@ export class TableRow extends Component {
         const pageIndex = pager && pager.pageIndex ? pager.pageIndex : 0;
 
         const totalCount = dataSource
-            && Array.isArray(dataSource.currentRecords)
-                ? dataSource.currentRecords.length
+            && List.isList(dataSource.currentRecords)
+                ? dataSource.currentRecords.count()
                 : 0;
 
         const { viewableCount, viewableIndex, rowHeight } = this.state;
