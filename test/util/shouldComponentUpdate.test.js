@@ -1,4 +1,5 @@
 import expect from 'expect';
+import { OrderedMap } from 'immutable';
 
 import store from './../../src/store/store';
 import {
@@ -86,7 +87,7 @@ describe('shouldRowUpdate utility function', () => {
                 width: '50%'
             }
         ],
-        editorState: {},
+        editorState: new OrderedMap(),
         menuState: {
             'cm93MA==': true
         },
@@ -215,15 +216,15 @@ describe('shouldRowUpdate utility function', () => {
             row: {
                 _key: 'key-1'
             },
-            editorState: {
-                'key-1': {
+            editorState: new OrderedMap({
+                'key-1': new Editor({
                     key: 'key-1',
                     rowIndex: 1,
                     values: {
                         field: 'value2'
                     }
-                }
-            }
+                })
+            })
         };
 
         const editedValues = {

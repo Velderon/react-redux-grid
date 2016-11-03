@@ -354,7 +354,7 @@ export const getRows = (
     bufferMultiplier
 ) => {
 
-    const rowArray = List.isList(rows)
+    let rowArray = List.isList(rows)
             ? rows.map((row, i) => getRowComponents(
                 columns,
                 columnManager,
@@ -377,7 +377,7 @@ export const getRows = (
                 store,
                 i
             ))
-            : [];
+            : new List();
 
     if (!infinite) {
         return rowArray;
@@ -408,13 +408,13 @@ export const getRows = (
     };
 
     // adding buffer rows for infinite scroll
-    rowArray.unshift(
+    rowArray = rowArray.unshift(
         <tr
             key="row-inifinite-buffer-top"
             { ...topProps }
         />
     );
-    rowArray.push(
+    rowArray = rowArray.push(
         <tr
             key="row-inifinite-buffer-bottom"
             { ...bottomProps }

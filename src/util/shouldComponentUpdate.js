@@ -23,6 +23,8 @@ export function shouldPagerUpdate(nextProps, nextState) {
 
     let result = true;
 
+    return true;
+
     const limitedNextProps = {
         gridData: nextProps.gridData,
         state: this.state

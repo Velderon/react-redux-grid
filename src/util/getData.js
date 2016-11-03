@@ -105,22 +105,11 @@ export const setDataAtDataIndex = (row = {}, dataIndex, val) => {
 };
 
 export const getValueFromDataIndexArr = (row, dataIndex) => {
-    // let temp = row;
+    const val = row.getIn(dataIndex);
 
-    // for (let i = 0; i < dataIndex.length; i++) {
-
-    //     if (!temp[dataIndex[i]]) {
-    //         // preferring silent failure on get
-    //         // but we throw an error on the update
-    //         // if the key path is invalid
-    //         return '';
-    //     }
-
-    //     temp = temp[dataIndex[i]];
-    // }
-
-    // return temp;
-    return row.getIn(dataIndex);
+    return val !== undefined
+        ? val
+        : '';
 };
 
 export const nameFromDataIndex = (column) => {

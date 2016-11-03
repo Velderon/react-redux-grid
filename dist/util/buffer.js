@@ -12,5 +12,7 @@ var bufferTop = exports.bufferTop = function bufferTop(rowHeight, viewableIndex,
 var bufferBottom = exports.bufferBottom = function bufferBottom(rowHeight, viewableIndex, viewableCount, bufferMultiplier, totalCount) {
     var spacerCount = Math.max(totalCount - viewableIndex - viewableCount * (bufferMultiplier + 1), 0);
 
+    // console.log(spacerCount)
+
     return spacerCount * rowHeight;
 };

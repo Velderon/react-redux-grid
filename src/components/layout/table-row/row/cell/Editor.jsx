@@ -85,7 +85,6 @@ export const Editor = ({
                 ? columns[index].editable(editableFuncArgs)
                 : true)) {
 
-        debugger;
         return (
             <span className={ wrapperCls }>
                 <Input

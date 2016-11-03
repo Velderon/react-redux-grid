@@ -76,7 +76,6 @@ var Editor = exports.Editor = function Editor(_ref) {
         );
     } else if (isEditable && columns[index] && (columns[index].editable === undefined || columns[index].editable) && (typeof columns[index].editable === 'function' ? columns[index].editable(editableFuncArgs) : true)) {
 
-        debugger;
         return _react2.default.createElement(
             'span',
             { className: wrapperCls },

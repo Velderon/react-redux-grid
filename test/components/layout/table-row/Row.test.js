@@ -1,13 +1,13 @@
 import React from 'react';
-import { fromJS } from 'immutable';
+import { fromJS, OrderedMap } from 'immutable';
 import expect from 'expect';
 import { mount } from 'enzyme';
 
-import { keyGenerator } from '../../../../src/util/keyGenerator';
+import { Editor } from './../../../../src/records';
 import { getSelModel, getColumnManager } from './../../../testUtils/';
 import store from './../../../../src/store/store';
 import {
-    Row, getSelectedText
+    Row
 } from './../../../../src/components/layout/table-row/Row.jsx';
 
 describe('The Grid Row Component', () => {
@@ -33,7 +33,7 @@ describe('The Grid Row Component', () => {
                 inline: 'inline'
             }
         },
-        editorState: {},
+        editorState: new OrderedMap(),
         events: {},
         menuState: {},
         reducerKeys: {},
@@ -195,9 +195,9 @@ describe('The Grid Row Component', () => {
                 ['row-0']: true
             },
             editorState: {
-                ['row-0']: {
+                ['row-0']: new Editor({
                     key: 'row-0'
-                }
+                })
             }
         };
 
@@ -217,9 +217,9 @@ describe('The Grid Row Component', () => {
                 ['row-0']: true
             },
             editorState: {
-                'row-0': {
+                'row-0': new Editor({
                     key: 'row-0'
-                }
+                })
             }
         };
 

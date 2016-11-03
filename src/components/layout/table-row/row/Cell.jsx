@@ -33,6 +33,7 @@ export const Cell = ({
 }) => {
 
     const isEditable = (editorState
+            && editorState.get
             && editorState.get(rowId)
             && editorState.get(rowId).key === rowId)
         || editor.config.type === editor.editModes.grid;

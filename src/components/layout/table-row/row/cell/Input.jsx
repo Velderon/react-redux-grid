@@ -8,6 +8,10 @@ import {
     nameFromDataIndex
 } from './../../../../../util/getData';
 
+import {
+    Editor
+} from './../../../../../records';
+
 export const Input = ({
     cellData,
     column,
@@ -19,7 +23,9 @@ export const Input = ({
 }) => {
 
     const colName = nameFromDataIndex(column);
-    const editorData = editorState.get(rowId);
+    const editorData = editorState && editorState.get
+        ? editorState.get(rowId)
+        : new Editor();
 
     const overrides = editorData
         && editorData.values

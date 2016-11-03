@@ -297,7 +297,7 @@ var getRows = exports.getRows = function getRows(columns, columnManager, dragAnd
 
     var rowArray = _immutable.List.isList(rows) ? rows.map(function (row, i) {
         return getRowComponents(columns, columnManager, dragAndDrop, editor, editorState, gridType, menuState, reducerKeys, readFunc, row, events, moveRow, plugins, selectionModel, selectedRows, showTreeRootNode, stateful, stateKey, store, i);
-    }) : [];
+    }) : new _immutable.List();
 
     if (!infinite) {
         return rowArray;
@@ -316,10 +316,10 @@ var getRows = exports.getRows = function getRows(columns, columnManager, dragAnd
     };
 
     // adding buffer rows for infinite scroll
-    rowArray.unshift(_react2.default.createElement('tr', _extends({
+    rowArray = rowArray.unshift(_react2.default.createElement('tr', _extends({
         key: 'row-inifinite-buffer-top'
     }, topProps)));
-    rowArray.push(_react2.default.createElement('tr', _extends({
+    rowArray = rowArray.push(_react2.default.createElement('tr', _extends({
         key: 'row-inifinite-buffer-bottom'
     }, bottomProps)));
 

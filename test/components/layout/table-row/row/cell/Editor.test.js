@@ -1,6 +1,7 @@
 import expect from 'expect';
 import React from 'react';
 import { mount } from 'enzyme';
+import { OrderedMap } from 'immutable';
 
 import store from './../../../../../../src/store/store';
 import {
@@ -20,7 +21,7 @@ describe('The Editor Component', () => {
                 dataIndex: 'position'
             }
         ],
-        editorState: {},
+        editorState: new OrderedMap(),
         rawValue: 'Michael Jordan',
         index: 0,
         isEditable: false,

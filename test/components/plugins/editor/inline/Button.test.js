@@ -2,6 +2,7 @@
 
 import expect from 'expect';
 import React from 'react';
+import { OrderedMap } from 'immutable';
 import { shallow, mount } from 'enzyme';
 
 import { CLASS_NAMES } from './../../../../../src/constants/GridConstants';
@@ -15,6 +16,9 @@ import store from './../../../../../src/store/store';
 import {
     Button
 } from './../../../../../src/components/plugins/editor/inline/Button.jsx';
+import {
+    Editor
+} from './../../../../../src/records';
 
 const BUTTON_TYPES = {
     CANCEL: 'CANCEL',
@@ -27,12 +31,12 @@ describe('The inline editor cancel button', () => {
         BUTTON_TYPES,
         saveText: 'Save',
         cancelText: 'Cancel',
-        editorState: {
-            'some-id': {
+        editorState: new OrderedMap({
+            'some-id': new Editor({
                 key: 'some-id',
                 values: {}
-            }
-        },
+            })
+        }),
         events: {},
         stateKey: 'test-grid',
         store,
@@ -79,8 +83,8 @@ describe('The inline editor cancel button', () => {
             top: 40,
             values: {
                 name: 'Scottie Pippen',
-                position: 'Power Forward'
-                key: 'some-id',
+                position: 'Power Forward',
+                key: 'some-id'
             },
             rowIndex: 0,
             columns: [
@@ -126,14 +130,14 @@ describe('The inline editor save button', () => {
         BUTTON_TYPES,
         saveText: 'Save',
         cancelText: 'Cancel',
-        editorState: {},
+        editorState: new OrderedMap(),
         events: {},
         stateKey: 'test-grid',
         store,
         type: BUTTON_TYPES.SAVE
     };
 
-    it('Should render an enabled save button',  () => {
+    it('Should render an enabled save button', () => {
 
         const button = shallow(<Button { ...props } />);
 
@@ -187,8 +191,8 @@ describe('The inline editor save button', () => {
                 HANDLE_AFTER_INLINE_EDITOR_SAVE: sinon.spy()
             },
             stateKey: 'test-stateKey',
-            editorState: {
-                'row-0': {
+            editorState: new OrderedMap({
+                'row-0': new Editor({
                     values: {
                         name: 'Scottie Pippen',
                         position: 'Power Forward'
@@ -196,8 +200,8 @@ describe('The inline editor save button', () => {
                     key: 'row-0',
                     valid: true,
                     rowIndex: 0
-                }
-            }
+                })
+            })
         };
 
         const eventButton = mount(<Button { ...eventProps } />);
@@ -226,16 +230,16 @@ describe('The inline editor save button', () => {
                 HANDLE_AFTER_INLINE_EDITOR_SAVE: sinon.spy()
             },
             stateKey: 'test-stateKey',
-            editorState: {
-                row: {
+            editorState: new OrderedMap({
+                row: new Editor({
                     values: {
                         name: 'Scottie Pippen',
                         position: 'Power Forward'
                     },
                     valid: true,
                     rowIndex: 0
-                }
-            }
+                })
+            })
         };
 
         const eventButton = mount(<Button { ...eventProps } />);
@@ -262,16 +266,16 @@ describe('The inline editor save button', () => {
                 HANDLE_AFTER_INLINE_EDITOR_SAVE: sinon.spy()
             },
             stateKey: 'test-stateKey',
-            editorState: {
-                row: {
+            editorState: new OrderedMap({
+                row: new Editor({
                     values: {
                         name: 'Scottie Pippen',
                         position: 'Power Forward'
                     },
                     valid: true,
                     rowIndex: 0
-                }
-            }
+                })
+            })
         };
 
         const eventButton = mount(<Button { ...eventProps } />);
