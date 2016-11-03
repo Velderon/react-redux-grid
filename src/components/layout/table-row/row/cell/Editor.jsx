@@ -28,7 +28,7 @@ export const Editor = ({
         editorState[rowId] = {};
     }
 
-    editorState[rowId].key = rowId;
+    // editorState[rowId].key = rowId;
 
     let colName = columns
         && columns[index]

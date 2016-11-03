@@ -1,4 +1,6 @@
 import { fromJS, Map } from 'immutable';
+
+import { Editor } from './../../../records';
 import { generateLastUpdate } from './../../../util/lastUpdate';
 
 import {
@@ -30,7 +32,7 @@ export const editRow = (state, {
        : 'mergeIn';
 
     return state[operation]([stateKey], fromJS({
-        [rowId]: {
+        [rowId]: new Editor({
             key: rowId,
             values,
             rowIndex,
@@ -38,7 +40,7 @@ export const editRow = (state, {
             valid: isValid,
             isCreate: isCreate || false,
             overrides: iOverrides
-        },
+        }),
         lastUpdate: generateLastUpdate()
     }));
 
@@ -49,7 +51,7 @@ export const setData = (state, { data, editMode, stateKey }) => {
 
         const keyedData = setKeysInData(data);
         const editorData = keyedData.reduce((prev, curr, i) => {
-            return prev.set(curr.get('_key'), fromJS({
+            return prev.set(curr.get('_key'), new Editor({
                 key: curr.get('_key'),
                 values: curr,
                 rowIndex: i,
@@ -70,12 +72,8 @@ export const rowValueChange = (state, {
     column, columns, value, rowId, stateKey
 }) => {
 
-    const previousValues = state.getIn([stateKey, rowId, 'values'])
-        ? state.getIn([stateKey, rowId, 'values']).toJS()
-        : {};
-    const overrides = state.getIn([stateKey, rowId, 'overrides'])
-        ? state.getIn([stateKey, rowId, 'overrides']).toJS()
-        : {};
+    const previousValues = state.getIn([stateKey, rowId]).values || {};
+    const overrides = state.getIn([stateKey, rowId]).overrides || {};
 
     let rowValues = setDataAtDataIndex(
         previousValues, column.dataIndex, value
@@ -103,12 +101,15 @@ export const rowValueChange = (state, {
 
     const valid = isRowValid(columns, rowValues);
 
-    state = state.mergeIn([stateKey, rowId], {
+    const record = state.getIn([stateKey, rowId]) || new Editor();
+    const updated = record.merge(Map({
         values: rowValues,
-        previousValues: state.getIn([stateKey, rowId, 'values']),
+        previousValues: record.values,
         valid,
         overrides
-    });
+    }));
+
+    state = state.setIn([stateKey, rowId], updated);
 
     return state.setIn(
         [stateKey, 'lastUpdate'],
@@ -117,9 +118,9 @@ export const rowValueChange = (state, {
 };
 
 export const repositionEditor = (state, { rowId, stateKey, top }) => {
-    const newState = state.mergeIn([stateKey, rowId], {
-        top: top
-    });
+    const record = state.getIn([stateKey, rowId]);
+    const updated = record.merge({ top });
+    const newState = state.mergeIn([stateKey, rowId], updated);
 
     return newState.mergeIn(
         [stateKey],

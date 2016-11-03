@@ -1,4 +1,3 @@
-import { fromJS } from 'immutable';
 import { generateLastUpdate } from './../../util/lastUpdate';
 
 import { Grid } from './../../records';

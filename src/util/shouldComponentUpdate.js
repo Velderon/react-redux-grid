@@ -72,6 +72,8 @@ export function shouldHeaderUpdate(nextProps, nextState) {
 export function shouldRowUpdate(nextProps) {
     let result = true;
 
+    return true;
+
     // unique key created by setData action/reducer
     const key = nextProps.row._key;
 
