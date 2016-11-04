@@ -14,17 +14,24 @@ export const editRow = (state, {
 }) => {
 
     const isValid = isRowValid(columns, values);
-    const iOverrides = state.getIn([stateKey, rowId, 'overrides'])
-       ? state.getIn([stateKey, rowId, 'overrides']).toJS()
-       : {};
+
+    let overrides = state.getIn([stateKey, rowId, 'overrides'])
+       ? state.getIn([stateKey, rowId, 'overrides'])
+       : new Map();
 
     columns.forEach((col, i) => {
         const val = getData(values, columns, i);
         const dataIndex = col.dataIndex;
 
         // setting disabled
-        iOverrides[dataIndex] = iOverrides[dataIndex] || {};
-        iOverrides[dataIndex].disabled = setDisabled(col, val, values);
+        if (!overrides.get(dataIndex)) {
+            overrides = overrides.set(dataIndex, new Map());
+        }
+
+        overrides = overrides.setIn(
+            [dataIndex, 'disabled'],
+            setDisabled(col, val, values)
+        );
     });
 
     const operation = editMode === 'inline'
@@ -39,7 +46,7 @@ export const editRow = (state, {
             top,
             valid: isValid,
             isCreate: isCreate || false,
-            overrides: iOverrides
+            overrides: overrides
         }),
         lastUpdate: generateLastUpdate()
     }));
@@ -72,8 +79,14 @@ export const rowValueChange = (state, {
     column, columns, value, rowId, stateKey
 }) => {
 
-    const previousValues = state.getIn([stateKey, rowId]).values || {};
-    const overrides = state.getIn([stateKey, rowId]).overrides || {};
+    const previousEditorState = state.getIn([stateKey, rowId]);
+    const previousValues = previousEditorState
+        ? previousEditorState.values
+        : new Map();
+
+    let overrides = previousEditorState
+        ? previousEditorState.overrides
+        : new Map();
 
     let rowValues = setDataAtDataIndex(
         previousValues, column.dataIndex, value
@@ -94,20 +107,28 @@ export const rowValueChange = (state, {
         }
 
         // setting disabled
-        overrides[dataIndex] = overrides[dataIndex] || {};
-        overrides[dataIndex].disabled = setDisabled(col, val, rowValues);
+        if (!overrides || !overrides.get) {
+            overrides = new Map();
+        }
 
+        if (!overrides.get(dataIndex)) {
+            overrides = overrides.set(dataIndex, Map());
+        }
+
+        overrides = overrides.setIn(
+            [dataIndex, 'disabled'], setDisabled(col, val, rowValues)
+        );
     });
 
     const valid = isRowValid(columns, rowValues);
 
     const record = state.getIn([stateKey, rowId]) || new Editor();
-    const updated = record.merge(Map({
+    const updated = record.merge({
         values: rowValues,
         previousValues: record.values,
         valid,
         overrides
-    }));
+    });
 
     state = state.setIn([stateKey, rowId], updated);
 
@@ -133,12 +154,16 @@ export const removeEditorState = (state, { stateKey }) => state.setIn(
         fromJS({ lastUpdate: generateLastUpdate() }));
 
 // helpers
-export const isCellValid = ({validator }, value, values) => {
+export const isCellValid = ({ validator }, value, values) => {
     if (!validator || !typeof validator === 'function') {
         return true;
     }
 
-    return validator({ value, values });
+    const vals = values && values.toJS
+        ? values.toJS()
+        : values;
+
+    return validator({ value, values: vals });
 };
 
 export const isRowValid = (columns, rowValues) => {
@@ -162,7 +187,16 @@ export const setDisabled = (col = {}, value, values) => {
     }
 
     if (typeof col.disabled === 'function') {
-        return col.disabled({ column: col, value, values });
+
+        const vals = values && values.toJS
+            ? values.toJS()
+            : values;
+
+        return col.disabled({
+            column: col,
+            value,
+            values: vals
+        });
     }
 
     return false;

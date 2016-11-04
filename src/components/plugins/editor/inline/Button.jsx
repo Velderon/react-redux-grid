@@ -77,10 +77,11 @@ export const onButtonClick = (
     BUTTON_TYPES, editorState, events, type, stateKey, editedRowKey, store
 ) => {
 
-    const values = {
-        ...editorState.get(editedRowKey).values,
-        _key: editedRowKey
-    };
+    let values = editorState.get(editedRowKey).values;
+
+    if (!values._key) {
+        values = values.set('_key', editedRowKey);
+    }
 
     if (type === BUTTON_TYPES.SAVE
         && events.HANDLE_BEFORE_INLINE_EDITOR_SAVE) {

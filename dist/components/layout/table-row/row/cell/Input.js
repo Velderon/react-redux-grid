@@ -13,6 +13,8 @@ var _EditorActions = require('./../../../../../actions/plugins/editor/EditorActi
 
 var _getData = require('./../../../../../util/getData');
 
+var _records = require('./../../../../../records');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Input = exports.Input = function Input(_ref) {
@@ -26,7 +28,7 @@ var Input = exports.Input = function Input(_ref) {
 
 
     var colName = (0, _getData.nameFromDataIndex)(column);
-    var editorData = editorState.get(rowId);
+    var editorData = editorState && editorState.get ? editorState.get(rowId) : new _records.Editor();
 
     var overrides = editorData && editorData.values && editorData.overrides[colName] !== undefined ? editorData.overrides[colName] : {};
 

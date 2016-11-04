@@ -9,6 +9,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactImmutableProptypes = require('react-immutable-proptypes');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Description = exports.Description = function Description(_ref) {
@@ -27,8 +29,18 @@ var Description = exports.Description = function Description(_ref) {
     );
 };
 
+var func = _react.PropTypes.func;
+var number = _react.PropTypes.number;
+var string = _react.PropTypes.string;
+
+
 Description.propTypes = {
-    toolbarRenderer: _react.PropTypes.func
+    currentRecords: _reactImmutableProptypes.list,
+    pageIndex: number,
+    pageSize: number,
+    recordType: string,
+    toolbarRenderer: func,
+    total: number
 };
 
 Description.defaultProps = {

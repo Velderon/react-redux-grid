@@ -88,49 +88,37 @@ var getRowKey = exports.getRowKey = function getRowKey(columns, rowValues, suffi
     return val;
 };
 
-var setDataAtDataIndex = exports.setDataAtDataIndex = function setDataAtDataIndex() {
-    var row = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var dataIndex = arguments[1];
-    var val = arguments[2];
-
+var setDataAtDataIndex = exports.setDataAtDataIndex = function setDataAtDataIndex(row, dataIndex, val) {
 
     if (typeof dataIndex === 'string') {
-        row[dataIndex] = val;
-        return row;
+        return row.set(dataIndex, val);
     }
 
-    var temp = row;
-
-    for (var i = 0; i < dataIndex.length - 1; i++) {
-        temp = temp[dataIndex[i]];
+    if (row.getIn(dataIndex)) {
+        return row.setIn(dataIndex, val);
     }
 
-    if (!temp[dataIndex[[dataIndex.length - 1]]]) {
-        throw new Error('Invalid key path');
-    }
+    throw new Error('Invalid key path');
 
-    temp[dataIndex[dataIndex.length - 1]] = val;
-
-    return row;
-};
-
-var getValueFromDataIndexArr = exports.getValueFromDataIndexArr = function getValueFromDataIndexArr(row, dataIndex) {
     // let temp = row;
 
-    // for (let i = 0; i < dataIndex.length; i++) {
-
-    //     if (!temp[dataIndex[i]]) {
-    //         // preferring silent failure on get
-    //         // but we throw an error on the update
-    //         // if the key path is invalid
-    //         return '';
-    //     }
-
+    // for (let i = 0; i < dataIndex.length - 1; i++) {
     //     temp = temp[dataIndex[i]];
     // }
 
-    // return temp;
-    return row.getIn(dataIndex);
+    // if (!temp[dataIndex[[dataIndex.length - 1]]]) {
+    //     throw new Error('Invalid key path');
+    // }
+
+    // temp[dataIndex[dataIndex.length - 1]] = val;
+
+    // return row;
+};
+
+var getValueFromDataIndexArr = exports.getValueFromDataIndexArr = function getValueFromDataIndexArr(row, dataIndex) {
+    var val = row.getIn(dataIndex);
+
+    return val !== undefined ? val : '';
 };
 
 var nameFromDataIndex = exports.nameFromDataIndex = function nameFromDataIndex(column) {

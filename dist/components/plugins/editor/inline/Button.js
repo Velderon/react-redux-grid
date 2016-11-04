@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.onButtonClick = exports.Button = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -73,9 +71,11 @@ Button.defaultProps = {
 
 var onButtonClick = exports.onButtonClick = function onButtonClick(BUTTON_TYPES, editorState, events, type, stateKey, editedRowKey, store) {
 
-    var values = _extends({}, editorState.get(editedRowKey).values, {
-        _key: editedRowKey
-    });
+    var values = editorState.get(editedRowKey).values;
+
+    if (!values._key) {
+        values = values.set('_key', editedRowKey);
+    }
 
     if (type === BUTTON_TYPES.SAVE && events.HANDLE_BEFORE_INLINE_EDITOR_SAVE) {
 

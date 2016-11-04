@@ -54,7 +54,7 @@ var Cell = exports.Cell = function Cell(_ref) {
     var treeData = _ref.treeData;
 
 
-    var isEditable = editorState && editorState.get(rowId) && editorState.get(rowId).key === rowId || editor.config.type === editor.editModes.grid;
+    var isEditable = editorState && editorState.get && editorState.get(rowId) && editorState.get(rowId).key === rowId || editor.config.type === editor.editModes.grid;
 
     var isExpandable = treeData.expandable && !treeData.leaf;
 

@@ -89,8 +89,10 @@ var rowValueChange = exports.rowValueChange = function rowValueChange(state, _re
     var stateKey = _ref3.stateKey;
 
 
-    var previousValues = state.getIn([stateKey, rowId]).values || {};
-    var overrides = state.getIn([stateKey, rowId]).overrides || {};
+    var previousEditorState = state.getIn([stateKey, rowId]);
+    var previousValues = previousEditorState ? previousEditorState.values : new _immutable.Map();
+
+    var overrides = previousEditorState ? previousEditorState.overrides : new _immutable.Map();
 
     var rowValues = (0, _getData.setDataAtDataIndex)(previousValues, column.dataIndex, value);
 
@@ -108,19 +110,26 @@ var rowValueChange = exports.rowValueChange = function rowValueChange(state, _re
         }
 
         // setting disabled
-        overrides[dataIndex] = overrides[dataIndex] || {};
-        overrides[dataIndex].disabled = setDisabled(col, val, rowValues);
+        if (!overrides || !overrides.get) {
+            overrides = new _immutable.Map();
+        }
+
+        if (!overrides.get(dataIndex)) {
+            overrides = overrides.set(dataIndex, (0, _immutable.Map)());
+        }
+
+        overrides = overrides.setIn([dataIndex, 'disabled'], setDisabled(col, val, rowValues));
     });
 
     var valid = isRowValid(columns, rowValues);
 
     var record = state.getIn([stateKey, rowId]) || new _records.Editor();
-    var updated = record.merge((0, _immutable.Map)({
+    var updated = record.merge({
         values: rowValues,
         previousValues: record.values,
         valid: valid,
         overrides: overrides
-    }));
+    });
 
     state = state.setIn([stateKey, rowId], updated);
 
@@ -180,7 +189,11 @@ var setDisabled = exports.setDisabled = function setDisabled() {
     }
 
     if (typeof col.disabled === 'function') {
-        return col.disabled({ column: col, value: value, values: values });
+        return col.disabled({
+            column: col,
+            value: value,
+            values: values.toJS()
+        });
     }
 
     return false;

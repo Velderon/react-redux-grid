@@ -21,9 +21,9 @@ var Sorter = exports.Sorter = function () {
         value: function sortBy(name, direction, datasource) {
             return datasource.data.sort(function (a, b) {
 
-                if (a[name] < b[name] && direction) {
+                if (a.get(name) < b.get(name) && direction) {
                     return direction === _GridConstants.SORT_DIRECTIONS.ASCEND ? 1 : -1;
-                } else if (a[name] > b[name]) {
+                } else if (a.get(name) > b.get(name)) {
                     return direction === _GridConstants.SORT_DIRECTIONS.ASCEND ? -1 : 1;
                 }
             });

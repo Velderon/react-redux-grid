@@ -3,7 +3,6 @@ import { Input } from './Input';
 import { CLASS_NAMES } from './../../../../../constants/GridConstants';
 import { prefix } from './../../../../../util/prefix';
 import { nameFromDataIndex } from './../../../../../util/getData';
-import { Editor as EditorRecord } from './../../../../../records';
 
 const wrapperCls = prefix(CLASS_NAMES.EDITOR.INLINE.INPUT_WRAPPER);
 
@@ -121,8 +120,8 @@ Editor.propTypes = {
     index: number,
     isEditable: bool,
     isRowSelected: bool,
-    row: object,
     rawValue: any,
+    row: object,
     rowId: string,
     stateKey: string,
     store: object

@@ -255,10 +255,10 @@ var getCustomComponent = exports.getCustomComponent = function getCustomComponen
 var getCurrentRecordTotal = exports.getCurrentRecordTotal = function getCurrentRecordTotal(gridData, pageSize, pageIndex, plugins) {
 
     if (plugins.PAGER.pagingType === 'remote' && gridData && gridData.currentRecords) {
-        return gridData.currentRecords.length;
+        return gridData.currentRecords.count();
     } else if (plugins.PAGER.pagingType === 'local') {
         var records = (0, _getCurrentRecords.getCurrentRecords)(gridData, pageIndex, pageSize);
-        return records && records.data ? records.data.length : 0;
+        return records && records.data ? records.data.count() : 0;
     }
 };
 
@@ -271,13 +271,13 @@ var getTotal = exports.getTotal = function getTotal(dataSource, pagerDefaults) {
     if (pagerDefaults && pagerDefaults.pagingType === 'remote') {
         return dataSource.total;
     } else if (pagerDefaults && pagerDefaults.pagingType === 'local') {
-        return dataSource.data.length;
+        return dataSource.data.count();
     }
 };
 
 var getPager = exports.getPager = function getPager(dataSource, pageSize, recordType, BUTTON_TYPES, pager, plugins, gridData, pagerDataSource, toolbarRenderer, stateKey, stuck, stuckBottom, store, top, width) {
 
-    var pageIndex = pager && pager.pageIndex || 0;
+    var pageIndex = pager && pager.get('pageIndex') ? pager.get('pageIndex') : 0;
 
     var toolbarProps = {
         className: (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.PAGERTOOLBAR, stuck ? 'is-stuck' : '', stuckBottom ? 'is-stuck-bottom' : '')

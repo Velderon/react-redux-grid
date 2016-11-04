@@ -82,26 +82,31 @@ export const getRowKey = (columns, rowValues, suffix) => {
     return val;
 };
 
-export const setDataAtDataIndex = (row = {}, dataIndex, val) => {
+export const setDataAtDataIndex = (row, dataIndex, val) => {
 
     if (typeof dataIndex === 'string') {
-        row[dataIndex] = val;
-        return row;
+        return row.set(dataIndex, val);
     }
 
-    let temp = row;
-
-    for (let i = 0; i < dataIndex.length - 1; i++) {
-        temp = temp[dataIndex[i]];
+    if (row.getIn(dataIndex)) {
+        return row.setIn(dataIndex, val);
     }
 
-    if (!temp[dataIndex[[dataIndex.length - 1]]]) {
-        throw new Error('Invalid key path');
-    }
+    throw new Error('Invalid key path');
 
-    temp[dataIndex[dataIndex.length - 1]] = val;
+    // let temp = row;
 
-    return row;
+    // for (let i = 0; i < dataIndex.length - 1; i++) {
+    //     temp = temp[dataIndex[i]];
+    // }
+
+    // if (!temp[dataIndex[[dataIndex.length - 1]]]) {
+    //     throw new Error('Invalid key path');
+    // }
+
+    // temp[dataIndex[dataIndex.length - 1]] = val;
+
+    // return row;
 };
 
 export const getValueFromDataIndexArr = (row, dataIndex) => {

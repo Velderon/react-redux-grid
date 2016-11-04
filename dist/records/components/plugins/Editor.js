@@ -8,13 +8,13 @@ var _immutable = require('immutable');
 
 var Editor = (0, _immutable.Record)({
     key: null,
-    values: null,
+    values: (0, _immutable.Map)(),
     rowIndex: null,
     top: null,
     valid: null,
     isCreate: null,
-    overrides: null,
-    previousValues: null,
+    overrides: (0, _immutable.Map)(),
+    previousValues: (0, _immutable.Map)(),
     lastUpdate: 0
 });
 

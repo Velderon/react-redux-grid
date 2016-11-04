@@ -40,6 +40,8 @@ function shouldPagerUpdate(nextProps, nextState) {
 
     var result = true;
 
+    return true;
+
     var limitedNextProps = {
         gridData: nextProps.gridData,
         state: this.state

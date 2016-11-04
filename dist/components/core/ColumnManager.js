@@ -105,7 +105,7 @@ var ColumnManager = function () {
                 }
             };
 
-            var pageIndex = pagerState && pagerState.pageIndex ? pagerState.pageIndex : 0;
+            var pageIndex = pagerState && pagerState.get(pageIndex) ? pagerState.get(pageIndex) : 0;
 
             var pageSize = pagerState && pagerState.pageSize ? pagerState.pageSize : _GridConstants.DEFAULT_PAGE_SIZE;
 
@@ -119,7 +119,6 @@ var ColumnManager = function () {
             }
 
             if (method === _GridConstants.SORT_METHODS.LOCAL) {
-
                 var data = typeof column.sortFn === 'function' ? dataSource.data.sort(column.sortFn.bind(null, direction)) : this.sorter.sortBy(column.dataIndex, direction, dataSource);
 
                 this.store.dispatch((0, _GridActions.doLocalSort)({

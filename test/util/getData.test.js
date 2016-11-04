@@ -413,36 +413,36 @@ describe('setDataAtDataIndex function', () => {
 
     it('Should work with nested object', () => {
 
-        const rowValues = {
+        const row = fromJS({
             outer: {
                 inner: 'oldValue'
             }
-        };
+        });
 
         expect(
             setDataAtDataIndex(
-                rowValues,
+                row,
                 ['outer', 'inner'],
                 'newValue'
             )
-        ).toEqual({
+        ).toEqual(fromJS({
             outer: {
                 inner: 'newValue'
             }
-        });
+        }));
     });
 
     it('Should throw an error if an invalid key path is passed', () => {
 
-        const rowValues = {
+        const row = fromJS({
             'new': {
                 thing: 'oldValue'
             }
-        };
+        });
 
         expect(() => {
             setDataAtDataIndex(
-                rowValues,
+                row,
                 ['new', 'invalidKey'],
                 'newValue'
             );
@@ -451,9 +451,9 @@ describe('setDataAtDataIndex function', () => {
 
     it('Should work with a string', () => {
 
-        const flatValues = {
+        const flatValues = fromJS({
             val: 1
-        };
+        });
 
         expect(
             setDataAtDataIndex(
@@ -461,9 +461,9 @@ describe('setDataAtDataIndex function', () => {
                 'val',
                 'newValue'
             )
-        ).toEqual({
+        ).toEqual(fromJS({
             val: 'newValue'
-        });
+        }));
     });
 
 });

@@ -44,7 +44,7 @@ var CheckBox = exports.CheckBox = function CheckBox(_ref) {
 
     var checkBoxProps = {
         className: (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.SELECTION_MODEL.CHECKBOX),
-        checked: selectedRows ? selectedRows[rowId] : false,
+        checked: selectedRows && selectedRows.get ? selectedRows.get(rowId) : false,
         type: 'checkbox',
         onChange: handleChange.bind(undefined, dataSource, store, type, stateKey, onSelect, rowId, index, rowData, selectionModelConfig, isSelected, events)
     };
