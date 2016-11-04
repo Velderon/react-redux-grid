@@ -67,7 +67,7 @@ export const Editor = ({
                     ? { ...row, ...cleanProps(editorData.values) }
                     : { key: rowId, ...row },
                 columnIndex: index,
-                value,
+                value: value && value.toJS ? value.toJS() : value,
                 isRowSelected,
                 stateKey
             }

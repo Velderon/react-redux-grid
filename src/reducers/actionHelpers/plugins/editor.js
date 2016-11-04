@@ -13,6 +13,10 @@ export const editRow = (state, {
     columns, editMode, rowIndex, rowId, stateKey, top, isCreate, values
 }) => {
 
+    if (!values.toJS) {
+        values = fromJS(values);
+    }
+
     const isValid = isRowValid(columns, values);
 
     let overrides = state.getIn([stateKey, rowId, 'overrides'])

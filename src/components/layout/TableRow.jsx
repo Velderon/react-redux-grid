@@ -31,7 +31,7 @@ export class TableRow extends Component {
 
         const totalCount = (
             dataSource && List.isList(dataSource.currentRecords)
-                ? dataSource.currentRecords.length
+                ? dataSource.currentRecords.count()
                 : 0
         );
 

@@ -214,8 +214,7 @@ export const handleClick = ({
 
         // if a row is clicked and the editorState is empty except
         // for last update integer, trigger edit event
-
-        if (!editorState || Object.keys(editorState).length === 1) {
+        if (!editorState || editorState.count() === 1) {
             handleEditClick(
                 editor,
                 store,
@@ -229,7 +228,7 @@ export const handleClick = ({
             );
         }
 
-        else if (editorState && !editorState[rowId]) {
+        else if (editorState && !editorState.get(rowId)) {
             handleEditClick(
                 editor,
                 store,

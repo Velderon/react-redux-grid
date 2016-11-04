@@ -22,15 +22,18 @@ export const getData = (
     }
 
     if (typeof dataIndex === 'string') {
-        return row
+        const val = row
             && row.get
             && row.get(dataIndex) !== undefined
             ? row.get(dataIndex)
             : null;
+
+        return val && val.toJS ? val.toJS() : val;
     }
 
     else if (Array.isArray(dataIndex)) {
-        return getValueFromDataIndexArr(row, dataIndex);
+        const val = getValueFromDataIndexArr(row, dataIndex);
+        return val && val.toJS ? val.toJS() : val;
     }
 
 };
