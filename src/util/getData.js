@@ -17,8 +17,10 @@ export const getData = (
         throw new Error('No dataIndex found on column', column);
     }
 
-    if (editorValues && editorValues[dataIndex] !== undefined) {
-        return editorValues[dataIndex];
+    if (editorValues
+        && editorValues.get
+        && editorValues.get(dataIndex) !== undefined) {
+        return editorValues.get(dataIndex);
     }
 
     if (typeof dataIndex === 'string') {

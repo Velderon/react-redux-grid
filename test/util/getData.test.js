@@ -227,9 +227,9 @@ describe('getData utility function', () => {
 
         const colIndex = 2;
 
-        const editorValues = {
+        const editorValues = fromJS({
             col3: 'value from editor state'
-        };
+        });
 
         expect(getData(row, columns, colIndex, editorValues))
             .toEqual('value from editor state');

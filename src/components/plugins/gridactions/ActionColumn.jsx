@@ -180,9 +180,13 @@ export const enableActions = (
         && actions
         && typeof actions.onMenuShow === 'function') {
 
+        const val = rowData && rowData.toJS
+            ? rowData.toJS()
+            : rowData
+
         const disabled = actions.onMenuShow({
             columns,
-            rowData
+            rowData: val
         });
 
         if (Array.isArray(disabled)) {

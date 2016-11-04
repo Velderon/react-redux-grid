@@ -274,7 +274,7 @@ export const getCellData = (
         && editorState.get(rowId)
         && editorState.get(rowId).values
         ? editorState.get(rowId).values
-        : {};
+        : new Map();
 
     const valueAtDataIndex = getData(row, columns, index, editedValues);
 
@@ -348,7 +348,7 @@ export const handleRowDoubleClickEvent = (
 
     fire(
         'HANDLE_ROW_DOUBLE_CLICK', events,
-        this, row.toJS(), rowId, reactEvent, id, browserEvent
+        this, row, rowId, reactEvent, id, browserEvent
     );
 
 };
@@ -383,7 +383,7 @@ export const handleRowSingleClickEvent = (
 
     fire(
         'HANDLE_BEFORE_ROW_CLICK', events,
-        this, row.toJS(), rowId, reactEvent, id, browserEvent
+        this, row, rowId, reactEvent, id, browserEvent
     );
 
     if (selectionModel
@@ -402,7 +402,7 @@ export const handleRowSingleClickEvent = (
 
     fire(
         'HANDLE_ROW_CLICK', events,
-        this, row.toJS(), rowId, reactEvent, id, browserEvent
+        this, row, rowId, reactEvent, id, browserEvent
     );
 };
 

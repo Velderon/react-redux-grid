@@ -210,9 +210,9 @@ export class TableRow extends Component {
             key={getRowKey(this.props.columns, row)}
             menuState={this.props.menuState}
             moveRow={this.moveRow}
-            nextRow={rows[index + 1]}
+            nextRow={rows.get(index + 1)}
             plugins={this.props.plugins}
-            previousRow={rows[index - 1]}
+            previousRow={rows.get(index - 1)}
             readFunc={this.props.readFunc}
             reducerKeys={this.props.reducerKeys}
             row={row}
