@@ -41,7 +41,7 @@ export const editRow = (state, {
     return state[operation]([stateKey], fromJS({
         [rowId]: new Editor({
             key: rowId,
-            values,
+            values: fromJS(values),
             rowIndex,
             top,
             valid: isValid,
@@ -65,7 +65,7 @@ export const setData = (state, { data, editMode, stateKey }) => {
                 top: null,
                 valid: null,
                 isCreate: false,
-                overrides: {}
+                overrides: Map()
             }));
         }, Map({ lastUpdate: generateLastUpdate() }));
 
@@ -98,7 +98,9 @@ export const rowValueChange = (state, {
 
         // interpreting `change func` to set final values
         // happens first, due to other validation
-        rowValues = handleChangeFunc(col, rowValues);
+        // need to turn back to immutable, since data is
+        // being retrieved externally
+        rowValues = fromJS(handleChangeFunc(col, rowValues));
 
         // setting default value
         if (col.defaultValue !== undefined
@@ -205,15 +207,20 @@ export const setDisabled = (col = {}, value, values) => {
 
 export const handleChangeFunc = (col, rowValues) => {
 
+    const vals = rowValues
+        && rowValues.toJS
+        ? rowValues.toJS()
+        : rowValues;
+
     if (!col.change || !typeof col.change === 'function') {
-        return rowValues;
+        return vals;
     }
 
-    const overrideValue = col.change({ values: rowValues }) || {};
+    const overrideValue = col.change({ values: vals }) || {};
 
     Object.keys(overrideValue).forEach(k => {
-        rowValues[k] = overrideValue[k];
+        vals[k] = overrideValue[k];
     });
 
-    return rowValues;
+    return vals;
 };

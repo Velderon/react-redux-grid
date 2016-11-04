@@ -31,27 +31,31 @@ var editRow = exports.editRow = function editRow(state, _ref) {
 
 
     var isValid = isRowValid(columns, values);
-    var iOverrides = state.getIn([stateKey, rowId, 'overrides']) ? state.getIn([stateKey, rowId, 'overrides']).toJS() : {};
+
+    var overrides = state.getIn([stateKey, rowId, 'overrides']) ? state.getIn([stateKey, rowId, 'overrides']) : new _immutable.Map();
 
     columns.forEach(function (col, i) {
         var val = (0, _getData.getData)(values, columns, i);
         var dataIndex = col.dataIndex;
 
         // setting disabled
-        iOverrides[dataIndex] = iOverrides[dataIndex] || {};
-        iOverrides[dataIndex].disabled = setDisabled(col, val, values);
+        if (!overrides.get(dataIndex)) {
+            overrides = overrides.set(dataIndex, new _immutable.Map());
+        }
+
+        overrides = overrides.setIn([dataIndex, 'disabled'], setDisabled(col, val, values));
     });
 
     var operation = editMode === 'inline' ? 'setIn' : 'mergeIn';
 
     return state[operation]([stateKey], (0, _immutable.fromJS)((_fromJS = {}, _defineProperty(_fromJS, rowId, new _records.Editor({
         key: rowId,
-        values: values,
+        values: (0, _immutable.fromJS)(values),
         rowIndex: rowIndex,
         top: top,
         valid: isValid,
         isCreate: isCreate || false,
-        overrides: iOverrides
+        overrides: overrides
     })), _defineProperty(_fromJS, 'lastUpdate', (0, _lastUpdate.generateLastUpdate)()), _fromJS)));
 };
 
@@ -71,7 +75,7 @@ var setData = exports.setData = function setData(state, _ref2) {
                 top: null,
                 valid: null,
                 isCreate: false,
-                overrides: {}
+                overrides: (0, _immutable.Map)()
             }));
         }, (0, _immutable.Map)({ lastUpdate: (0, _lastUpdate.generateLastUpdate)() }));
 
@@ -102,7 +106,9 @@ var rowValueChange = exports.rowValueChange = function rowValueChange(state, _re
 
         // interpreting `change func` to set final values
         // happens first, due to other validation
-        rowValues = handleChangeFunc(col, rowValues);
+        // need to turn back to immutable, since data is
+        // being retrieved externally
+        rowValues = (0, _immutable.fromJS)(handleChangeFunc(col, rowValues));
 
         // setting default value
         if (col.defaultValue !== undefined && val === undefined || val === null) {
@@ -161,7 +167,9 @@ var isCellValid = exports.isCellValid = function isCellValid(_ref6, value, value
         return true;
     }
 
-    return validator({ value: value, values: values });
+    var vals = values && values.toJS ? values.toJS() : values;
+
+    return validator({ value: value, values: vals });
 };
 
 var isRowValid = exports.isRowValid = function isRowValid(columns, rowValues) {
@@ -189,10 +197,13 @@ var setDisabled = exports.setDisabled = function setDisabled() {
     }
 
     if (typeof col.disabled === 'function') {
+
+        var vals = values && values.toJS ? values.toJS() : values;
+
         return col.disabled({
             column: col,
             value: value,
-            values: values.toJS()
+            values: vals
         });
     }
 
@@ -201,15 +212,17 @@ var setDisabled = exports.setDisabled = function setDisabled() {
 
 var handleChangeFunc = exports.handleChangeFunc = function handleChangeFunc(col, rowValues) {
 
+    var vals = rowValues && rowValues.toJS ? rowValues.toJS() : rowValues;
+
     if (!col.change || !_typeof(col.change) === 'function') {
-        return rowValues;
+        return vals;
     }
 
-    var overrideValue = col.change({ values: rowValues }) || {};
+    var overrideValue = col.change({ values: vals }) || {};
 
     Object.keys(overrideValue).forEach(function (k) {
-        rowValues[k] = overrideValue[k];
+        vals[k] = overrideValue[k];
     });
 
-    return rowValues;
+    return vals;
 };

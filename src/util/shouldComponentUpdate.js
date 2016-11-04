@@ -23,8 +23,6 @@ export function shouldPagerUpdate(nextProps, nextState) {
 
     let result = true;
 
-    return true;
-
     const limitedNextProps = {
         gridData: nextProps.gridData,
         state: this.state
@@ -48,7 +46,7 @@ export function shouldHeaderUpdate(nextProps, nextState) {
     return true;
 
     const menuState = state =>
-        state && state['header-row'];
+        state && state.get('header-row');
 
     const limitedNextProps = {
         columns: nextProps.columns,
@@ -74,26 +72,24 @@ export function shouldHeaderUpdate(nextProps, nextState) {
 export function shouldRowUpdate(nextProps) {
     let result = true;
 
-    return true;
-
     // unique key created by setData action/reducer
-    const key = nextProps.row._key;
+    const key = nextProps.row.get('_key');
 
-    const isSelected = rows => Boolean(rows && rows[key]);
+    const isSelected = rows => Boolean(rows && rows.get(key));
 
-    const isMenuShown = rows => Boolean(rows && rows[key]);
+    const isMenuShown = rows => Boolean(rows && rows.get(key));
 
     const isEdited = editorState => Boolean(
         editorState
-        && editorState[key]
-        && editorState[key].values
+        && editorState.get(key)
+        && editorState.get(key).values
     );
 
     const limitedNextProps = {
         columns: slimColumn(nextProps.columns),
         isEdited: isEdited(nextProps.editorState),
         currentValues: isEdited(nextProps.editorState)
-            ? nextProps.editorState[key]
+            ? nextProps.editorState.get(key)
             : null,
         isMenuShown: isMenuShown(nextProps.menuState),
         row: nextProps.row,
@@ -106,7 +102,7 @@ export function shouldRowUpdate(nextProps) {
         columns: this.previousColumns,
         isEdited: isEdited(this.props.editorState),
         currentValues: isEdited(this.props.editorState)
-            ? this.props.editorState[key]
+            ? this.props.editorState.get(key)
             : null,
         isMenuShown: isMenuShown(this.props.menuState),
         row: this.props.row,

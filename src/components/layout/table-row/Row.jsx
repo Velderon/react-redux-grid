@@ -96,7 +96,7 @@ export class Row extends Component {
         });
 
         const editClass = editorState
-            && editorState[id]
+            && editorState.get(id)
             && editor.config.type !== 'grid'
             ? selectionModel.defaults.editCls
             : '';
@@ -283,7 +283,7 @@ export const getCellData = (
         return columns[index].renderer({
             column: columns[index],
             value: valueAtDataIndex,
-            row,
+            row: row.toJS(),
             key,
             index,
             store

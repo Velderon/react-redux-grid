@@ -40,8 +40,6 @@ function shouldPagerUpdate(nextProps, nextState) {
 
     var result = true;
 
-    return true;
-
     var limitedNextProps = {
         gridData: nextProps.gridData,
         state: this.state
@@ -63,7 +61,7 @@ function shouldHeaderUpdate(nextProps, nextState) {
     return true;
 
     var menuState = function menuState(state) {
-        return state && state['header-row'];
+        return state && state.get('header-row');
     };
 
     var limitedNextProps = {
@@ -88,27 +86,25 @@ function shouldHeaderUpdate(nextProps, nextState) {
 function shouldRowUpdate(nextProps) {
     var result = true;
 
-    return true;
-
     // unique key created by setData action/reducer
-    var key = nextProps.row._key;
+    var key = nextProps.row.get('_key');
 
     var isSelected = function isSelected(rows) {
-        return Boolean(rows && rows[key]);
+        return Boolean(rows && rows.get(key));
     };
 
     var isMenuShown = function isMenuShown(rows) {
-        return Boolean(rows && rows[key]);
+        return Boolean(rows && rows.get(key));
     };
 
     var isEdited = function isEdited(editorState) {
-        return Boolean(editorState && editorState[key] && editorState[key].values);
+        return Boolean(editorState && editorState.get(key) && editorState.get(key).values);
     };
 
     var limitedNextProps = {
         columns: slimColumn(nextProps.columns),
         isEdited: isEdited(nextProps.editorState),
-        currentValues: isEdited(nextProps.editorState) ? nextProps.editorState[key] : null,
+        currentValues: isEdited(nextProps.editorState) ? nextProps.editorState.get(key) : null,
         isMenuShown: isMenuShown(nextProps.menuState),
         row: nextProps.row,
         index: nextProps.index,
@@ -119,7 +115,7 @@ function shouldRowUpdate(nextProps) {
     var limitedProps = {
         columns: this.previousColumns,
         isEdited: isEdited(this.props.editorState),
-        currentValues: isEdited(this.props.editorState) ? this.props.editorState[key] : null,
+        currentValues: isEdited(this.props.editorState) ? this.props.editorState.get(key) : null,
         isMenuShown: isMenuShown(this.props.menuState),
         row: this.props.row,
         index: this.props.index,

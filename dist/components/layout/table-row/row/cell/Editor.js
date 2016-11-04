@@ -19,8 +19,6 @@ var _prefix = require('./../../../../../util/prefix');
 
 var _getData = require('./../../../../../util/getData');
 
-var _records = require('./../../../../../records');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var wrapperCls = (0, _prefix.prefix)(_GridConstants.CLASS_NAMES.EDITOR.INLINE.INPUT_WRAPPER);
@@ -45,12 +43,12 @@ var Editor = exports.Editor = function Editor(_ref) {
         colName = columns && columns[index] && columns[index].name ? columns[index].name : '';
     }
 
-    var editorData = editorState.get(rowId);
+    var editorData = editorState.get(rowId) || new Map();
 
-    var value = editorData.values ? editorData.values.get(colName) : rawValue;
+    var value = editorData.values && editorData.values.get ? editorData.values.get(colName) : rawValue;
 
     var editableFuncArgs = {
-        row: editorState.get(rowId),
+        row: editorState.get(rowId) ? editorState.get(rowId).toJS() : {},
         isRowSelected: isRowSelected,
         store: store
     };
@@ -122,8 +120,8 @@ Editor.propTypes = {
     index: number,
     isEditable: bool,
     isRowSelected: bool,
-    row: object,
     rawValue: any,
+    row: object,
     rowId: string,
     stateKey: string,
     store: object

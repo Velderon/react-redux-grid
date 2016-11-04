@@ -2,7 +2,7 @@
 
 import expect from 'expect';
 import React from 'react';
-import { OrderedMap } from 'immutable';
+import { OrderedMap, fromJS, Map } from 'immutable';
 import { shallow, mount } from 'enzyme';
 
 import { CLASS_NAMES } from './../../../../../src/constants/GridConstants';
@@ -34,9 +34,10 @@ describe('The inline editor cancel button', () => {
         editorState: new OrderedMap({
             'some-id': new Editor({
                 key: 'some-id',
-                values: {}
+                values: Map()
             })
         }),
+        editedRowKey: 'some-id',
         events: {},
         stateKey: 'test-grid',
         store,
@@ -81,11 +82,11 @@ describe('The inline editor cancel button', () => {
         store.dispatch(editRow({
             rowId: 'some-id',
             top: 40,
-            values: {
+            values: fromJS({
                 name: 'Scottie Pippen',
                 position: 'Power Forward',
                 key: 'some-id'
-            },
+            }),
             rowIndex: 0,
             columns: [
                 {
@@ -132,6 +133,7 @@ describe('The inline editor save button', () => {
         cancelText: 'Cancel',
         editorState: new OrderedMap(),
         events: {},
+        editedRowKey: 'row-0',
         stateKey: 'test-grid',
         store,
         type: BUTTON_TYPES.SAVE
@@ -157,11 +159,11 @@ describe('The inline editor save button', () => {
 
         const disabledProps = {
             ...props,
-            editorState: {
-                row: {
+            editorState: new fromJS({
+                ['row-0']: new Editor({
                     valid: false
-                }
-            }
+                })
+            })
         };
 
         const button = shallow(<Button { ...disabledProps } />);
@@ -175,7 +177,7 @@ describe('The inline editor save button', () => {
         const modifiedTextProps = {
             ...props,
             saveText: 'test save text',
-            editorState: {}
+            editorState: Map()
         };
         const button = shallow(<Button { ...modifiedTextProps } />);
 
@@ -193,10 +195,10 @@ describe('The inline editor save button', () => {
             stateKey: 'test-stateKey',
             editorState: new OrderedMap({
                 'row-0': new Editor({
-                    values: {
+                    values: Map({
                         name: 'Scottie Pippen',
                         position: 'Power Forward'
-                    },
+                    }),
                     key: 'row-0',
                     valid: true,
                     rowIndex: 0
@@ -231,11 +233,11 @@ describe('The inline editor save button', () => {
             },
             stateKey: 'test-stateKey',
             editorState: new OrderedMap({
-                row: new Editor({
-                    values: {
+                ['row-0']: new Editor({
+                    values: Map({
                         name: 'Scottie Pippen',
                         position: 'Power Forward'
-                    },
+                    }),
                     valid: true,
                     rowIndex: 0
                 })
@@ -267,11 +269,11 @@ describe('The inline editor save button', () => {
             },
             stateKey: 'test-stateKey',
             editorState: new OrderedMap({
-                row: new Editor({
-                    values: {
+                ['row-0']: new Editor({
+                    values: Map({
                         name: 'Scottie Pippen',
                         position: 'Power Forward'
-                    },
+                    }),
                     valid: true,
                     rowIndex: 0
                 })

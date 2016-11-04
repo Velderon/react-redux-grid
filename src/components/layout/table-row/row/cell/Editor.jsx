@@ -33,14 +33,17 @@ export const Editor = ({
         : '';
     }
 
-    const editorData = editorState.get(rowId);
+    const editorData = editorState.get(rowId) || new Map();
 
     const value = editorData.values
+        && editorData.values.get
         ? editorData.values.get(colName)
         : rawValue;
 
     const editableFuncArgs = {
-        row: editorState.get(rowId),
+        row: editorState.get(rowId)
+            ? editorState.get(rowId).toJS()
+            : {},
         isRowSelected,
         store
     };

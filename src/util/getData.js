@@ -84,6 +84,10 @@ export const getRowKey = (columns, rowValues, suffix) => {
 
 export const setDataAtDataIndex = (row, dataIndex, val) => {
 
+    if (!row.toJS) {
+        row = fromJS(row);
+    }
+
     if (typeof dataIndex === 'string') {
         return row.set(dataIndex, val);
     }
@@ -93,20 +97,6 @@ export const setDataAtDataIndex = (row, dataIndex, val) => {
     }
 
     throw new Error('Invalid key path');
-
-    // let temp = row;
-
-    // for (let i = 0; i < dataIndex.length - 1; i++) {
-    //     temp = temp[dataIndex[i]];
-    // }
-
-    // if (!temp[dataIndex[[dataIndex.length - 1]]]) {
-    //     throw new Error('Invalid key path');
-    // }
-
-    // temp[dataIndex[dataIndex.length - 1]] = val;
-
-    // return row;
 };
 
 export const getValueFromDataIndexArr = (row, dataIndex) => {

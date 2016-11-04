@@ -90,6 +90,10 @@ var getRowKey = exports.getRowKey = function getRowKey(columns, rowValues, suffi
 
 var setDataAtDataIndex = exports.setDataAtDataIndex = function setDataAtDataIndex(row, dataIndex, val) {
 
+    if (!row.toJS) {
+        row = (0, _immutable.fromJS)(row);
+    }
+
     if (typeof dataIndex === 'string') {
         return row.set(dataIndex, val);
     }
@@ -99,20 +103,6 @@ var setDataAtDataIndex = exports.setDataAtDataIndex = function setDataAtDataInde
     }
 
     throw new Error('Invalid key path');
-
-    // let temp = row;
-
-    // for (let i = 0; i < dataIndex.length - 1; i++) {
-    //     temp = temp[dataIndex[i]];
-    // }
-
-    // if (!temp[dataIndex[[dataIndex.length - 1]]]) {
-    //     throw new Error('Invalid key path');
-    // }
-
-    // temp[dataIndex[dataIndex.length - 1]] = val;
-
-    // return row;
 };
 
 var getValueFromDataIndexArr = exports.getValueFromDataIndexArr = function getValueFromDataIndexArr(row, dataIndex) {

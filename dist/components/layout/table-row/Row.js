@@ -134,7 +134,7 @@ var Row = exports.Row = function (_Component) {
                 });
             });
 
-            var editClass = editorState && editorState[id] && editor.config.type !== 'grid' ? selectionModel.defaults.editCls : '';
+            var editClass = editorState && editorState.get(id) && editor.config.type !== 'grid' ? selectionModel.defaults.editCls : '';
 
             var selectedClass = isSelected ? selectionModel.defaults.activeCls : '';
 
@@ -301,7 +301,7 @@ var getCellData = exports.getCellData = function getCellData(columns, editor, ed
         return columns[index].renderer({
             column: columns[index],
             value: valueAtDataIndex,
-            row: row,
+            row: row.toJS(),
             key: key,
             index: index,
             store: store
