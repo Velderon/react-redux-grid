@@ -7,6 +7,7 @@ import { EmptyCell } from './row/EmptyCell';
 import RowContainer from './row/RowContainer';
 
 import { prefix } from '../../../util/prefix';
+import { fire } from '../../../util/fire';
 import { getData, getRowKey } from '../../../util/getData';
 import { CLASS_NAMES } from '../../../constants/GridConstants';
 
@@ -184,15 +185,18 @@ export class Row extends Component {
         editorState: object,
         emptyDataMessage: string,
         events: object,
+        findRow: func.isRequired,
         gridType: oneOf([
             'tree', 'grid'
         ]),
         index: number,
         isDragging: bool,
         menuState: object,
+        nextRow: object,
         pageSize: number,
         pager: object,
         plugins: object,
+        previousRow: object,
         readFunc: func,
         reducerKeys: object,
         row: object,
@@ -342,11 +346,11 @@ export const handleRowDoubleClickEvent = (
         });
     }
 
-    if (events.HANDLE_ROW_DOUBLE_CLICK) {
-        events.HANDLE_ROW_DOUBLE_CLICK.call(
-            this, row.toJS(), rowId, reactEvent, id, browserEvent
-        );
-    }
+    fire(
+        'HANDLE_ROW_DOUBLE_CLICK', events,
+        this, row.toJS(), rowId, reactEvent, id, browserEvent
+    );
+
 };
 
 export const getSelectedText = () => {
@@ -377,11 +381,10 @@ export const handleRowSingleClickEvent = (
         return false;
     }
 
-    if (events.HANDLE_BEFORE_ROW_CLICK) {
-        events.HANDLE_BEFORE_ROW_CLICK.call(
-            this, row, rowId, reactEvent, id, browserEvent
-        );
-    }
+    fire(
+        'HANDLE_BEFORE_ROW_CLICK', events,
+        this, row.toJS(), rowId, reactEvent, id, browserEvent
+    );
 
     if (selectionModel
             && selectionModel.defaults.selectionEvent
@@ -397,21 +400,43 @@ export const handleRowSingleClickEvent = (
         });
     }
 
-    if (events.HANDLE_ROW_CLICK) {
-        events.HANDLE_ROW_CLICK.call(
-            this, row, rowId, reactEvent, id, browserEvent
-        );
-    }
+    fire(
+        'HANDLE_ROW_CLICK', events,
+        this, row.toJS(), rowId, reactEvent, id, browserEvent
+    );
 };
 
 const rowSource = {
-    beginDrag({ getTreeData }) {
-        return { getTreeData };
+    beginDrag({ getTreeData, row }) {
+        return {
+            getTreeData,
+            _id: row._id,
+            _index: row._index,
+            _parentId: row._parentId,
+            _path: row._path
+        };
+    },
+    endDrag({ getTreeData, moveRow }, monitor) {
+        const { id, index, parentId, path } = getTreeData();
+        const { _index, _parentId, _path } = monitor.getItem();
+
+        if (!monitor.didDrop()) {
+            moveRow(
+                { id, index, parentId, path },
+                { index: _index, parentId: _parentId, path: _path }
+            );
+        }
     }
 };
 
 const rowTarget = {
     hover(props, monitor, component) {
+
+        const {
+            events: hoverEvents,
+            row: hoverRow,
+            previousRow: hoverPreviousRow
+        } = props;
 
         const {
             index: hoverIndex,
@@ -424,7 +449,8 @@ const rowTarget = {
 
         const {
             lastX,
-            getTreeData
+            getTreeData,
+            row
         } = monitor.getItem();
 
         const {
@@ -494,6 +520,13 @@ const rowTarget = {
 
             // X position indicates a move to right
             else if (lastX + DRAG_INCREMENT < mouseX && !isFirstChild) {
+                const validDrop = fire(
+                    'HANDLE_BEFORE_TREE_CHILD_CREATE', hoverEvents,
+                    null, row, hoverPreviousRow
+                );
+                if (validDrop === false) {
+                    return;
+                }
                 targetParentId = previousSiblingId;
                 targetIndex = previousSiblingTotalChildren;
                 targetPath.push(targetParentId);
@@ -525,6 +558,13 @@ const rowTarget = {
             // If hoverIsExpanded, put item as first child instead
             // instead of placing it as a sibling below hovered item
             if (flatIndex < hoverFlatIndex && hoverIsExpanded) {
+                const validDrop = fire(
+                    'HANDLE_BEFORE_TREE_CHILD_CREATE', hoverEvents,
+                    null, row, hoverRow
+                );
+                if (validDrop === false) {
+                    return;
+                }
                 targetIndex = 0;
                 targetParentId = hoverId;
                 targetPath.push(targetParentId);
@@ -539,14 +579,17 @@ const rowTarget = {
         monitor.getItem().lastX = mouseX;
     },
 
-    drop(props) {
-        const { events, getTreeData, row } = props;
+    drop(props, monitor) {
+        const { events, getTreeData, findRow } = props;
+        const { _id } = monitor.getItem();
 
-        if (typeof events.HANDLE_AFTER_ROW_DROP === 'function') {
-            events.HANDLE_AFTER_ROW_DROP({
-                treeData: getTreeData(),
-                row
-            });
+        const row = findRow(data => data._id === _id);
+
+        if (row) {
+            fire(
+                'HANDLE_AFTER_ROW_DROP', events,
+                null, row, getTreeData()
+            );
         }
     }
 
